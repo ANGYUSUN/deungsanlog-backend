@@ -20,24 +20,40 @@ public class MountainProcessor implements ItemProcessor<MountainMeta, Mountain> 
 
     @Override
     public Mountain process(MountainMeta meta) {
-        // 1. API에서 산 이름으로 조회
-        List<ApiMountainDto> results = apiClient.searchByName(meta.getName());
+        String name = meta.getName();
+        Double metaHeight = meta.getHeight();
 
-        // 2. 이름이 정확히 같은 항목 중 고도 차이 최소 선택
-        ApiMountainDto matched = results.stream()
+        // 1. 첫 글자를 기반으로 API 검색
+        String keyword = name.substring(0, 1);
+        List<ApiMountainDto> results = apiClient.searchByKeyword(keyword);
+        System.out.println("🔍 API 응답 수 (" + keyword + "): " + results.size());
+
+        // 2. API 결과에서 이름이 완전 일치하거나, name으로 시작하는 항목만 필터링
+        List<ApiMountainDto> sameNameList = results.stream()
+                .filter(dto -> dto.getMntnnm() != null && dto.getMntnnm().startsWith(name))
                 .filter(dto -> dto.getMntninfohght() != null)
-                .filter(dto -> meta.getName().equals(dto.getMntnnm())) // 이름 완전 일치
-                .min(Comparator.comparingDouble(dto -> Math.abs(dto.getMntninfohght() - meta.getHeight())))
+                .toList();
+
+        if (sameNameList.isEmpty()) {
+            System.out.println("❌ No suitable match for: " + name);
+            return null;
+        }
+
+        // 3. 고도 차이 최소 항목 선택
+        ApiMountainDto matched = sameNameList.stream()
+                .min(Comparator.comparingDouble(dto -> Math.abs(dto.getMntninfohght() - metaHeight)))
                 .orElse(null);
 
         if (matched == null) {
-            System.out.println("❌ No exact match found for: " + meta.getName() + ", height: " + meta.getHeight());
+            System.out.println("❌ No elevation match found for: " + name);
             return null;
-        } else {
-            System.out.println("✅ Matched: " + matched.getMntnnm() + ", API 고도: " + matched.getMntninfohght() + ", 메타 고도: " + meta.getHeight());
         }
 
-        // 3. Entity 생성
+        System.out.println("✅ 매칭 완료: " + matched.getMntnnm()
+                + " | API 고도: " + matched.getMntninfohght()
+                + " | 메타 고도: " + metaHeight);
+
+        // 4. Entity 생성
         Mountain mountain = Mountain.builder()
                 .name(matched.getMntnnm())
                 .externalId(matched.getMntnid())
@@ -54,7 +70,6 @@ public class MountainProcessor implements ItemProcessor<MountainMeta, Mountain> 
                 .build();
 
         mountain.setDescription(description);
-
         return mountain;
     }
 }

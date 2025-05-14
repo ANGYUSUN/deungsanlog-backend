@@ -40,11 +40,11 @@ public class MountainApiClient {
 
     private static final String BASE_URL = "http://api.forest.go.kr/openapi/service/trailInfoService/getforeststoryservice";
 
-    public List<ApiMountainDto> searchByName(String mountainName) {
+    public List<ApiMountainDto> searchByKeyword(String keyword) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL)
                 .queryParam("serviceKey", serviceKey)
-                .queryParam("mntnnm", URLEncoder.encode(mountainName, StandardCharsets.UTF_8))
-                .queryParam("numOfRows", 10)
+                .queryParam("mntnnm", URLEncoder.encode(keyword, StandardCharsets.UTF_8))
+                .queryParam("numOfRows", 3400)
                 .queryParam("pageNo", 1)
                 .queryParam("_type", "xml");
 
@@ -52,18 +52,18 @@ public class MountainApiClient {
 
         try {
             String xml = restTemplate.getForObject(uri, String.class);
-            System.out.println("🔍 API Response for " + mountainName + ":\n" + xml);
+            System.out.println("🔍 API Response for " + keyword + ":\n" + xml);
             XmlMapper xmlMapper = new XmlMapper();
             ApiMountainResponse response = xmlMapper.readValue(xml, ApiMountainResponse.class);
 
             if (response == null || response.getBody() == null || response.getBody().getItems() == null) {
-                System.out.println("❌ No data found for: " + mountainName);
+                System.out.println("❌ No data found for: " + keyword);
                 return Collections.emptyList();
             }
 
             return response.getBody().getItems().getItem();
         } catch (Exception e) {
-            System.out.println("❌ API 요청 실패: " + mountainName);
+            System.out.println("❌ API 요청 실패: " + keyword);
             e.printStackTrace();
             return Collections.emptyList();
         }
