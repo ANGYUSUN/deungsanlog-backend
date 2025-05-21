@@ -184,3 +184,8 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,windows,linux
+
+# Custom additions
+application-keys.yml
+bootstrap.properties
+logs/
