@@ -1,6 +1,0 @@
-#보안 자격 증명
-spring:
-  security:
-    user:
-      name: admin
-      password: 1234

@@ -1,9 +1,0 @@
-# Config Server와 Eureka Server 접속 정보
-spring:
-  config:
-    import: "optional:configserver:http://admin:1234@localhost:9000"
-
-eureka:
-  client:
-    service-url:
-      defaultZone: "http://admin:1234@localhost:8761/eureka"
