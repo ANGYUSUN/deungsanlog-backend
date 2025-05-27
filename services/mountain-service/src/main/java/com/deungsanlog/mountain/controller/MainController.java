@@ -1,4 +1,4 @@
-package com.example.test2.controller;
+package com.deungsanlog.mountain.controller;
 
 
 import org.springframework.stereotype.Controller;
@@ -16,6 +16,6 @@ public class MainController {
     @GetMapping("/api/test")
     @ResponseBody
     public String apiTest() {
-        return "MS2 Service Test OK!";
+        return "Mountain Service OK!";
     }
 }

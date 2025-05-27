@@ -1,4 +1,4 @@
-package com.example.test1;
+package com.deungsanlog.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class Test1Application {
+public class UserServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Test1Application.class, args);
+        SpringApplication.run(UserServiceApplication.class, args);
     }
 
 }
