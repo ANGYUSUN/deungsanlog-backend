@@ -5,11 +5,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class MainController {
-
-
-    @GetMapping("ms1/first")
-    public String mainP(){
-       return "main";
+public class UserController {
+    @GetMapping("/users")
+    public String mainPage() {
+        return "main";
     }
 }
