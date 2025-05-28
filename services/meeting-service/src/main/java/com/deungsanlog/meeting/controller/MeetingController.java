@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MeetingController {
 
-    @GetMapping("/meeting")
+    @GetMapping("/meetings")
     public String mainPage() {
         return "main";
     }
