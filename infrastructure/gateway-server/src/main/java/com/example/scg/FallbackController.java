@@ -9,28 +9,36 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/fallback")
 public class FallbackController {
 
-    @GetMapping("/ms1")
-    public Mono<String> ms1Fallback() {
-        return Mono.just("서비스1(MS1)이 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    @GetMapping("/users")
+    public Mono<String> usersFallback() {
+        return Mono.just("유저서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
     }
 
-    @GetMapping("/ms2")
-    public Mono<String> ms2Fallback() {
-        return Mono.just("서비스2(MS2)가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    @GetMapping("/mountains")
+    public Mono<String> mountainsFallback() {
+        return Mono.just("산 서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
     }
 
-    @GetMapping("/ms3")
-    public Mono<String> ms3Fallback() {
-        return Mono.just("서비스3(MS3)이 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    @GetMapping("/records")
+    public Mono<String> recordsFallback() {return Mono.just("기록 서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
     }
 
-    @GetMapping("/ms4")
-    public Mono<String> ms4Fallback() {
-        return Mono.just("서비스4(MS4)가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    @GetMapping("/community")
+    public Mono<String> communityFallback() {
+        return Mono.just("커뮤니티 서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
     }
 
-    @GetMapping("/ms5")
-    public Mono<String> ms5Fallback() {
-        return Mono.just("서비스5(MS5)가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    @GetMapping("/meeting")
+    public Mono<String> meetingFallback() {
+        return Mono.just("모임 서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    }
+
+    @GetMapping("/ormie")
+    public Mono<String> ormieFallback() {
+        return Mono.just("오르미 서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    }
+    @GetMapping("/notification")
+    public Mono<String> notificationFallback() {
+        return Mono.just("알림 서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
     }
 }
