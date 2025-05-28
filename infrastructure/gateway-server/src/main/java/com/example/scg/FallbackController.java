@@ -32,4 +32,13 @@ public class FallbackController {
     public Mono<String> meetingFallback() {
         return Mono.just("모임 서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
     }
+
+    @GetMapping("/ormie")
+    public Mono<String> ormieFallback() {
+        return Mono.just("오르미 서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    }
+    @GetMapping("/notification")
+    public Mono<String> notificationFallback() {
+        return Mono.just("알림 서비스가 현재 응답하지 않습니다. 잠시 후 다시 시도해주세요.");
+    }
 }
