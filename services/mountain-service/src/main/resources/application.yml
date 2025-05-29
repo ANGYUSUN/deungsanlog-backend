@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: mountain-service
+  profiles:
+    active: dev
+    include: keys
+  config:
+    import: application-keys.yml
+
+  datasource:
+    url: jdbc:mysql://14.63.178.148:${db.port}/deungsanlog?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  batch:
+    jdbc:
+      initialize-schema: always
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+
+publicdata:
+  api:
+    key: ${publicdata.api.key}
