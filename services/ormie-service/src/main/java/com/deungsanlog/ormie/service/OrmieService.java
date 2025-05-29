@@ -38,7 +38,14 @@ public class OrmieService {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "gpt-3.5-turbo");
 
+        // 사용자 프로필 기반 system 메시지 생성
+        String profileMessage = String.format(
+                "당신은 등산 챗봇 오르미입니다. 사용자 정보는 다음과 같습니다: 나이: %s, 지역: %s, 등산 경험: %s. 이 정보를 참고해서 질문에 답해주세요.",
+                requestDto.getAge(), requestDto.getRegion(), requestDto.getLevel()
+        );
+
         List<Map<String, String>> messages = List.of(
+                Map.of("role", "system", "content", profileMessage),
                 Map.of("role", "user", "content", requestDto.getMessage())
         );
         requestBody.put("messages", messages);
