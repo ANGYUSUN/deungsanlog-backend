@@ -1,4 +1,4 @@
-package com.example.scg;
+package com.deungsanlog.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
