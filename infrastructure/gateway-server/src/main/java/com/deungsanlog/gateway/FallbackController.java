@@ -1,4 +1,4 @@
-package com.example.scg;
+package com.deungsanlog.gateway;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

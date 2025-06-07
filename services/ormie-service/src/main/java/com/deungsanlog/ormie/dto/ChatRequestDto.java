@@ -2,14 +2,15 @@
 
 package com.deungsanlog.ormie.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
-
 public class ChatRequestDto {
     private String message;
+
+    private String age;
+    private String region;
+    private String level;
 }
