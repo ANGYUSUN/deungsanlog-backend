@@ -1,7 +1,7 @@
 package com.deungsanlog.mountain.controller;
 
-import com.deungsanlog.mountain.dto.MountainDetailDto;
 import com.deungsanlog.mountain.entity.Mountain;
+import com.deungsanlog.mountain.dto.MountainDetailDto;
 import com.deungsanlog.mountain.service.MountainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
