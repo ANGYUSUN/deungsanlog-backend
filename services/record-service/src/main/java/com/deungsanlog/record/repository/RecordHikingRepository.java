@@ -4,5 +4,5 @@ import com.deungsanlog.record.domain.RecordHiking;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecordHikingRepository extends JpaRepository<RecordHiking, Long> {
-
+    int countByUserId(Long userId);
 }

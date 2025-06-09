@@ -1,6 +1,7 @@
 package com.deungsanlog.record.service;
 
 import com.deungsanlog.record.domain.RecordHiking;
+import com.deungsanlog.record.dto.RecordHikingResponse;
 import com.deungsanlog.record.repository.RecordHikingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -50,5 +52,19 @@ public class RecordHikingService {
                 .build();
 
         recordHikingRepository.save(record);
+    }
+    public List<RecordHikingResponse> getRecordsByUser(Long userId) {
+        return recordHikingRepository.findAll().stream()
+                .map(record -> RecordHikingResponse.builder()
+                        .id(record.getId())
+                        .userId(record.getUserId())
+                        .mountainId(record.getMountainId())
+                        .photoUrl(record.getPhotoUrl())
+                        .content(record.getContent())
+                        .recordDate(record.getRecordDate())
+                        .createdAt(record.getCreatedAt())
+                        .updatedAt(record.getUpdatedAt())
+                        .build())
+                .toList();
     }
 }

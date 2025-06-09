@@ -16,8 +16,7 @@ public class RecordHiking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    // TODO: 실제 User, Mountain 객체 연동 시 엔티티 교체
+    
     private Long userId;
 
     private Long mountainId;

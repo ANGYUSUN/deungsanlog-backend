@@ -1,5 +1,6 @@
 package com.deungsanlog.record.controller;
 
+import com.deungsanlog.record.dto.RecordHikingResponse;
 import com.deungsanlog.record.service.RecordHikingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,6 +22,13 @@ public class RecordController {
     @GetMapping("/status")
     public Map<String, String> getStatus() {
         return Map.of("message", "record-service is up!");
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<List<RecordHikingResponse>> getRecordsByUser(
+            @RequestParam("userId") Long userId
+    ) {
+        return ResponseEntity.ok(recordHikingService.getRecordsByUser(userId));
     }
 
     @PostMapping("/post")
