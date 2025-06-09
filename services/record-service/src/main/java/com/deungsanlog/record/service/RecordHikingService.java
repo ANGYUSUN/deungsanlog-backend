@@ -54,7 +54,7 @@ public class RecordHikingService {
         recordHikingRepository.save(record);
     }
     public List<RecordHikingResponse> getRecordsByUser(Long userId) {
-        return recordHikingRepository.findAll().stream()
+        return recordHikingRepository.findByUserId(userId).stream()
                 .map(record -> RecordHikingResponse.builder()
                         .id(record.getId())
                         .userId(record.getUserId())
@@ -67,4 +67,5 @@ public class RecordHikingService {
                         .build())
                 .toList();
     }
+
 }
