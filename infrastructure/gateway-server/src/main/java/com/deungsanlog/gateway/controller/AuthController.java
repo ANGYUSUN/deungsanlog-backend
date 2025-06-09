@@ -1,129 +1,224 @@
 package com.deungsanlog.gateway.controller;
 
-import com.deungsanlog.gateway.service.GoogleOAuthService;
-import com.deungsanlog.gateway.security.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.deungsanlog.gateway.component.JwtTokenProvider;
+import com.deungsanlog.gateway.dto.GoogleTokenResponse;
+import com.deungsanlog.gateway.dto.GoogleUserInfo;
+import com.deungsanlog.gateway.service.UserServiceClient;
+import com.deungsanlog.gateway.dto.UserCreateRequest;
+import com.deungsanlog.gateway.dto.UserResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
-    @Autowired
-    private GoogleOAuthService googleOAuthService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserServiceClient userServiceClient;
+    private final WebClient webClient = WebClient.builder().build();
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String googleClientId;
 
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String googleClientSecret;
+
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String redirectUri;
+
+    /**
+     * Google OAuth2 로그인 시작점
+     * 프론트엔드에서 이 URL로 리다이렉트하면 Google 로그인 페이지로 이동
+     */
+    @GetMapping("/google")
+    public Mono<ResponseEntity<Map<String, String>>> googleLogin() {
+        log.info("Google OAuth2 로그인 시작");
+
+        String googleAuthUrl = "https://accounts.google.com/o/oauth2/auth"
+                + "?client_id=" + googleClientId
+                + "&redirect_uri=" + redirectUri
+                + "&scope=email profile"
+                + "&response_type=code"
+                + "&access_type=offline";
+
+        log.info("Google 인증 URL 생성: {}", googleAuthUrl);
+
+        Map<String, String> response = Map.of(
+                "authUrl", googleAuthUrl,
+                "message", "Google 로그인 페이지로 리다이렉트하세요"
+        );
+
+        return Mono.just(ResponseEntity.ok(response));
+    }
+
+    /**
+     * Google OAuth2 콜백 처리
+     * Google에서 인증 완료 후 이 엔드포인트로 code와 함께 리다이렉트됨
+     */
     @GetMapping("/google/callback")
-    public Mono<ResponseEntity<Object>> googleCallback(@RequestParam String code) {
-        System.out.println("=== 구글 OAuth 콜백 시작 ===");
-        System.out.println("받은 인증 코드: " + code);
+    public Mono<ResponseEntity<Map<String, Object>>> googleCallback(@RequestParam String code) {
+        log.info("Google OAuth2 콜백 처리 시작: code={}", code);
 
-        return googleOAuthService.getAccessToken(code)
-                .flatMap(accessToken -> {
-                    System.out.println("✅ 액세스 토큰 받음: " + accessToken.substring(0, 20) + "...");
-                    return googleOAuthService.getUserInfo(accessToken);
-                })
-                .map(userInfo -> {
-                    System.out.println("✅ 구글 사용자 정보: " + userInfo);
-
-                    // JWT 토큰 생성
-                    String jwtToken = jwtTokenProvider.generateToken(
-                            userInfo.getEmail(),
-                            userInfo.getName(),
-                            userInfo.getPicture()
-                    );
-
-                    System.out.println("✅ JWT 토큰 생성 완료: " + jwtToken.substring(0, 20) + "...");
-
-                    // 응답 데이터 구성
-                    Map<String, Object> response = new HashMap<>();
-                    response.put("success", true);
-                    response.put("token", jwtToken);
-                    response.put("user", Map.of(
-                            "email", userInfo.getEmail(),
-                            "name", userInfo.getName(),
-                            "picture", userInfo.getPicture()
-                    ));
-                    response.put("message", "🎉 로그인 성공!");
-
-                    return ResponseEntity.ok((Object) response);
-                })
+        return exchangeCodeForToken(code)
+                .flatMap(this::getUserInfoFromGoogle)
+                .flatMap(this::saveUserToUserService)
+                .flatMap(this::generateJwtResponse)
+                .doOnSuccess(response -> log.info("OAuth2 로그인 성공"))
                 .onErrorResume(error -> {
-                    System.err.println("❌ OAuth 처리 중 오류: " + error.getMessage());
-                    error.printStackTrace();
-
-                    Map<String, Object> errorResponse = new HashMap<>();
-                    errorResponse.put("success", false);
-                    errorResponse.put("error", "로그인 처리 중 오류가 발생했습니다.");
-                    errorResponse.put("message", error.getMessage());
-
-                    return Mono.just(ResponseEntity.badRequest().body((Object) errorResponse));
+                    log.error("OAuth2 로그인 실패", error);
+                    Map<String, Object> errorResponse = Map.of(
+                            "success", false,
+                            "error", "OAuth2 로그인 실패",
+                            "message", error.getMessage()
+                    );
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
                 });
     }
 
-    // JWT 토큰 검증 테스트용 엔드포인트
-    @GetMapping("/verify")
-    public ResponseEntity<Object> verifyToken(@RequestHeader("Authorization") String authHeader) {
+    /**
+     * Step 1: Google에서 Authorization Code를 Access Token으로 교환
+     */
+    private Mono<String> exchangeCodeForToken(String code) {
+        log.info("Google Access Token 요청 시작");
+
+        String tokenUrl = "https://oauth2.googleapis.com/token";
+
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("client_id", googleClientId);
+        formData.add("client_secret", googleClientSecret);
+        formData.add("code", code);
+        formData.add("grant_type", "authorization_code");
+        formData.add("redirect_uri", redirectUri);
+
+        return webClient.post()
+                .uri(tokenUrl)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData(formData))
+                .retrieve()
+                .bodyToMono(GoogleTokenResponse.class)
+                .map(GoogleTokenResponse::getAccessToken)
+                .doOnSuccess(token -> log.info("Google Access Token 획득 성공"));
+    }
+
+    /**
+     * Step 2: Access Token으로 Google에서 사용자 정보 조회
+     */
+    private Mono<GoogleUserInfo> getUserInfoFromGoogle(String accessToken) {
+        log.info("Google 사용자 정보 요청 시작");
+
+        String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
+
+        return webClient.get()
+                .uri(userInfoUrl)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(GoogleUserInfo.class)
+                .doOnSuccess(userInfo -> log.info("Google 사용자 정보 획득 성공: email={}", userInfo.getEmail()));
+    }
+
+    /**
+     * Step 3: User Service에 사용자 정보 저장/업데이트
+     */
+    private Mono<UserResponse> saveUserToUserService(GoogleUserInfo googleUser) {
+        log.info("User Service에 사용자 정보 저장 시작: email={}", googleUser.getEmail());
+
+        UserCreateRequest request = UserCreateRequest.builder()
+                .email(googleUser.getEmail())
+                .nickname(googleUser.getName())
+                .profileImgUrl(googleUser.getPicture())
+                .provider("google")
+                .providerId(googleUser.getId())
+                .build();
+
+        return userServiceClient.saveOrUpdateUser(request);
+    }
+
+    /**
+     * Step 4: JWT 토큰 생성 후 응답
+     */
+    private Mono<ResponseEntity<Map<String, Object>>> generateJwtResponse(UserResponse user) {
+        log.info("JWT 토큰 생성 시작: userId={}", user.getId());
+
         try {
-            System.out.println("=== JWT 토큰 검증 시작 ===");
-            System.out.println("Authorization 헤더: " + authHeader);
+            // 멘토님의 JwtTokenProvider 사용
+            String jwtToken = jwtTokenProvider.generateToken(
+                    user.getEmail(),
+                    List.of("ROLE_USER"), // 기본 권한
+                    user.getId()
+            );
 
-            String token = authHeader.replace("Bearer ", "");
+            Map<String, Object> response = Map.of(
+                    "success", true,
+                    "token", jwtToken,
+                    "user", Map.of(
+                            "id", user.getId(),
+                            "email", user.getEmail(),
+                            "nickname", user.getNickname(),
+                            "profileImgUrl", user.getProfileImgUrl() != null ? user.getProfileImgUrl() : ""
+                    )
+            );
 
-            if (jwtTokenProvider.validateToken(token)) {
-                String email = jwtTokenProvider.getEmailFromToken(token);
-                String name = jwtTokenProvider.getNameFromToken(token);
+            log.info("JWT 토큰 생성 완료: userId={}", user.getId());
+            return Mono.just(ResponseEntity.ok(response));
 
-                System.out.println("✅ 토큰 검증 성공 - 사용자: " + email);
-
-                Map<String, Object> response = new HashMap<>();
-                response.put("valid", true);
-                response.put("email", email);
-                response.put("name", name);
-                response.put("message", "유효한 토큰입니다.");
-
-                return ResponseEntity.ok((Object) response);
-            } else {
-                System.out.println("❌ 유효하지 않은 토큰");
-                return ResponseEntity.status(401).body((Object) Map.of(
-                        "valid", false,
-                        "message", "유효하지 않은 토큰입니다."
-                ));
-            }
         } catch (Exception e) {
-            System.err.println("❌ 토큰 검증 실패: " + e.getMessage());
-            return ResponseEntity.status(401).body((Object) Map.of(
-                    "valid", false,
-                    "message", "토큰 검증 중 오류가 발생했습니다."
-            ));
+            log.error("JWT 토큰 생성 실패", e);
+            Map<String, Object> errorResponse = Map.of(
+                    "success", false,
+                    "error", "JWT 토큰 생성 실패",
+                    "message", e.getMessage()
+            );
+            return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
         }
     }
 
-    // 로그인 페이지로 리다이렉트하는 간단한 엔드포인트
-    @GetMapping("/login")
-    public ResponseEntity<Object> login() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "구글 로그인을 시작하세요!");
-        response.put("loginUrl", "http://localhost:8080/oauth2/authorization/google");
-        response.put("instructions", "위 URL을 클릭하여 구글 로그인을 진행하세요.");
+    /**
+     * 토큰 검증 엔드포인트 (클라이언트에서 토큰 유효성 확인용)
+     */
+    @GetMapping("/verify")
+    public Mono<ResponseEntity<Map<String, Object>>> verifyToken(@RequestHeader("X-AUTH-TOKEN") String token) {
+        log.info("토큰 검증 요청");
 
-        return ResponseEntity.ok((Object) response);
-    }
+        try {
+            if (!jwtTokenProvider.validateToken(token)) {
+                return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("valid", false, "message", "Invalid token")));
+            }
 
-    // 로그아웃 엔드포인트 (선택사항)
-    @PostMapping("/logout")
-    public ResponseEntity<Object> logout() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "로그아웃되었습니다. 클라이언트에서 토큰을 삭제하세요.");
+            String email = jwtTokenProvider.getUserEmail(token);
+            String role = jwtTokenProvider.getUserRole(token);
+            Long userId = jwtTokenProvider.getUserIdAsLong(token);
 
-        return ResponseEntity.ok((Object) response);
+            Map<String, Object> response = Map.of(
+                    "valid", true,
+                    "user", Map.of(
+                            "id", userId,
+                            "email", email,
+                            "role", role
+                    )
+            );
+
+            return Mono.just(ResponseEntity.ok(response));
+
+        } catch (Exception e) {
+            log.error("토큰 검증 실패", e);
+            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("valid", false, "message", "Token verification failed")));
+        }
     }
 }
