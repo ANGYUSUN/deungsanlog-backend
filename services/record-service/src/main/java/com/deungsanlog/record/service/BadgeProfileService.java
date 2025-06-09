@@ -1,5 +1,6 @@
 package com.deungsanlog.record.service;
 
+import com.deungsanlog.record.client.UserClient;
 import com.deungsanlog.record.domain.RecordBadgeStage;
 import com.deungsanlog.record.dto.BadgeProfileDto;
 import com.deungsanlog.record.repository.RecordBadgeStageRepository;
@@ -13,6 +14,7 @@ public class BadgeProfileService {
 
     private final RecordHikingRepository recordHikingRepository;
     private final RecordBadgeStageRepository badgeStageRepository;
+    private final UserClient userClient;
 
     public BadgeProfileDto getBadgeProfile(Long userId) {
         int recordCount = recordHikingRepository.countByUserId(userId);
@@ -21,7 +23,7 @@ public class BadgeProfileService {
         RecordBadgeStage badgeStage = badgeStageRepository.findByStage(stage)
                 .orElseThrow(() -> new IllegalArgumentException("해당 단계의 뱃지를 찾을 수 없습니다."));
 
-        String nickname = "테스트유저"; // ✅ 임시값 또는 추후 외부 연동
+        String nickname = userClient.getNickname(userId);
 
         return BadgeProfileDto.builder()
                 .stage(badgeStage.getStage())
