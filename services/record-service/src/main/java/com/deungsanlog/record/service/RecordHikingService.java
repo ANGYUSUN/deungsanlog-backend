@@ -31,12 +31,16 @@ public class RecordHikingService {
         System.out.println("📷 photo.originalFilename: " + photo.getOriginalFilename());
 
         String fileName = UUID.randomUUID() + "_" + photo.getOriginalFilename();
-        String uploadDir = System.getProperty("user.dir") + "/uploads";  // 절대 경로로 지정
+        String uploadDir = System.getProperty("user.dir") + "/services/record-service/uploads";
         Path filePath = Paths.get(uploadDir, fileName);
+
+        System.out.println("📂 실제 파일 저장 경로: " + filePath.toAbsolutePath());
 
         try {
             Files.createDirectories(Paths.get(uploadDir)); // 디렉토리가 없으면 생성
             Files.copy(photo.getInputStream(), filePath);
+            System.out.println("✅ 파일 저장 성공: " + filePath.toAbsolutePath());
+            System.out.println("✅ 파일 존재 여부: " + Files.exists(filePath));
         } catch (IOException e) {
             throw new RuntimeException("사진 저장 실패", e);
         }
@@ -48,7 +52,7 @@ public class RecordHikingService {
                 .mountainId(mountainId)
                 .recordDate(date)
                 .content(content)
-                .photoUrl("/uploads/" + fileName) // static path
+                .photoUrl("/api/records/uploads/" + fileName) // 경로 수정
                 .build();
 
         recordHikingRepository.save(record);
