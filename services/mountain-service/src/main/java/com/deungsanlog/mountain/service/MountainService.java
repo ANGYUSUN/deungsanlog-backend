@@ -1,6 +1,7 @@
 package com.deungsanlog.mountain.service;
 
 import com.deungsanlog.mountain.dto.MountainDetailDto;
+import com.deungsanlog.mountain.dto.MountainRecordSearchResponse;
 import com.deungsanlog.mountain.entity.Mountain;
 import com.deungsanlog.mountain.entity.MountainDescription;
 import com.deungsanlog.mountain.entity.MountainSunInfo;
@@ -48,5 +49,12 @@ public class MountainService {
 
         // 4. 3개 데이터를 하나로 합쳐서 반환
         return new MountainDetailDto(mountain, description, sunInfo);
+    }
+
+    // 레코드 서비스에 제공하는 산 검색 기능
+    public List<MountainRecordSearchResponse> searchByKeyword(String keyword) {
+        return mountainRepository.findByNameOrLocationContaining(keyword).stream()
+                .map(m -> new MountainRecordSearchResponse(m.getId(), m.getName(), m.getLocation()))
+                .toList();
     }
 }

@@ -3,6 +3,8 @@ package com.deungsanlog.user.controller;
 
 import com.deungsanlog.user.dto.UserCreateRequest;
 import com.deungsanlog.user.dto.UserResponse;
+import com.deungsanlog.user.entity.User;
+import com.deungsanlog.user.repository.UserRepository;
 import com.deungsanlog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
     /**
      * 서비스 상태 확인 (Gateway에서 호출)
@@ -102,5 +105,12 @@ public class UserController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/nickname")
+    public ResponseEntity<String> getNickname(@PathVariable Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+        return ResponseEntity.ok(user.getNickname());
     }
 }

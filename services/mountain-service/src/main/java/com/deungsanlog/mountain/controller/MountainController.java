@@ -1,5 +1,6 @@
 package com.deungsanlog.mountain.controller;
 
+import com.deungsanlog.mountain.dto.MountainRecordSearchResponse;
 import com.deungsanlog.mountain.entity.Mountain;
 import com.deungsanlog.mountain.dto.MountainDetailDto;
 import com.deungsanlog.mountain.service.MountainService;
@@ -30,4 +31,8 @@ private MountainService mountainService; // Repository 대신 Service 주입
         return mountainService.searchMountain(name); // Service 호출
     }
 
+    @GetMapping("/record/search")
+    public List<MountainRecordSearchResponse> search(@RequestParam String keyword) {
+        return mountainService.searchByKeyword(keyword);
+    }
 }
