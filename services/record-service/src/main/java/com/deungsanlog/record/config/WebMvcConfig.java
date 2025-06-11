@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/api/records/uploads/**")
+        registry.addResourceHandler("/record-service/uploads/**")
                 .addResourceLocations("file:C:/sw-project/deungsanlog-backend/services/record-service/uploads/");
     }
 }
