@@ -75,4 +75,7 @@ public class RecordHikingService {
                 .toList();
     }
 
+    public void delete(Long recordId) {
+        recordHikingRepository.deleteById(recordId);
+    }
 }

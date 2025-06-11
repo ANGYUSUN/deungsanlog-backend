@@ -43,4 +43,11 @@ public class RecordController {
         recordHikingService.create(userId, mountainId, mountainName, recordDate, content, photo);
         return ResponseEntity.ok("등산 기록이 성공적으로 저장되었습니다!");
     }
+
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteRecord(@RequestParam("recordId") Long recordId) {
+        recordHikingService.delete(recordId);
+        return ResponseEntity.ok("등산 기록이 성공적으로 삭제되었습니다!");
+    }
 }
