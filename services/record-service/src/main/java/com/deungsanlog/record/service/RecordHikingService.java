@@ -52,7 +52,7 @@ public class RecordHikingService {
                 .mountainId(mountainId)
                 .recordDate(date)
                 .content(content)
-                .photoUrl("/api/records/uploads/" + fileName) // 경로 수정
+                .photoUrl("/uploads/" + fileName)
                 .build();
 
         recordHikingRepository.save(record);
