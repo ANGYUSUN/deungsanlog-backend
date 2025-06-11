@@ -8,18 +8,23 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "record_hikings")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class RecordHiking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private Long userId;
 
     private Long mountainId;
+
+    @Column(length = 100)
+    private String mountainName;
 
     private LocalDate recordDate;
 
