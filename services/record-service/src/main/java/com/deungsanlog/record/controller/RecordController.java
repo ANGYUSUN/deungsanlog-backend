@@ -34,12 +34,13 @@ public class RecordController {
     @PostMapping("/post")
     public ResponseEntity<String> createRecord(
             @RequestParam("userId") Long userId,
-            @RequestParam("mountainId") Long mountainId,
+            @RequestParam(value = "mountainId", required = false) Long mountainId,
+            @RequestParam("mountainName") String mountainName,
             @RequestParam("recordDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate,
             @RequestParam(value = "content", required = false) String content,
             @RequestParam("photo") MultipartFile photo
     ) {
-        recordHikingService.create(userId, mountainId, recordDate, content, photo);
+        recordHikingService.create(userId, mountainId, mountainName, recordDate, content, photo);
         return ResponseEntity.ok("등산 기록이 성공적으로 저장되었습니다!");
     }
 }

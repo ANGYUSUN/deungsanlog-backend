@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -22,10 +21,11 @@ public class RecordHikingService {
 
     private final RecordHikingRepository recordHikingRepository;
 
-    public void create(Long userId, Long mountainId, LocalDate date, String content, MultipartFile photo) {
+    public void create(Long userId, Long mountainId, String mountainName, LocalDate date, String content, MultipartFile photo) {
         System.out.println("📩 등산 기록 생성 요청 받음!");
         System.out.println("👤 userId: " + userId);
         System.out.println("⛰ mountainId: " + mountainId);
+        System.out.println("⛰ mountainName: " + mountainName);
         System.out.println("📅 recordDate: " + date);
         System.out.println("📝 content: " + content);
         System.out.println("📷 photo.originalFilename: " + photo.getOriginalFilename());
@@ -50,6 +50,7 @@ public class RecordHikingService {
         RecordHiking record = RecordHiking.builder()
                 .userId(userId)
                 .mountainId(mountainId)
+                .mountainName(mountainName)
                 .recordDate(date)
                 .content(content)
                 .photoUrl("/uploads/" + fileName)
@@ -57,12 +58,14 @@ public class RecordHikingService {
 
         recordHikingRepository.save(record);
     }
+
     public List<RecordHikingResponse> getRecordsByUser(Long userId) {
         return recordHikingRepository.findByUserId(userId).stream()
                 .map(record -> RecordHikingResponse.builder()
                         .id(record.getId())
                         .userId(record.getUserId())
                         .mountainId(record.getMountainId())
+                        .mountainName(record.getMountainName())
                         .photoUrl(record.getPhotoUrl())
                         .content(record.getContent())
                         .recordDate(record.getRecordDate())

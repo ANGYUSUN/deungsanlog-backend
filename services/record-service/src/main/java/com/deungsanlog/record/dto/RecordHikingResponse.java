@@ -14,6 +14,7 @@ public class RecordHikingResponse {
     private Long id;
     private Long userId;
     private Long mountainId;
+    private String mountainName;
     private String photoUrl;
     private String content;
     private LocalDate recordDate;
