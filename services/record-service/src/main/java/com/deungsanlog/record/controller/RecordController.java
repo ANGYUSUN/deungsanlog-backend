@@ -44,6 +44,25 @@ public class RecordController {
         return ResponseEntity.ok("등산 기록이 성공적으로 저장되었습니다!");
     }
 
+    @GetMapping("/record/{recordId}")
+    public ResponseEntity<RecordHikingResponse> getRecordById(
+            @PathVariable("recordId") Long recordId
+    ) {
+        RecordHikingResponse record = recordHikingService.getRecordById(recordId);
+        return ResponseEntity.ok(record);
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity<String> editRecord(
+            @RequestParam("recordId") Long recordId,
+            @RequestParam(value = "mountainName", required = false) String mountainName,
+            @RequestParam(value = "recordDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "photo", required = false) MultipartFile photo
+    ) {
+        recordHikingService.edit(recordId, mountainName, recordDate, content, photo);
+        return ResponseEntity.ok("등산 기록이 성공적으로 수정되었습니다!");
+    }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteRecord(@RequestParam("recordId") Long recordId) {

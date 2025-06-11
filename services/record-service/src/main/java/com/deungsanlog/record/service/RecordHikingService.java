@@ -75,6 +75,36 @@ public class RecordHikingService {
                 .toList();
     }
 
+    public RecordHikingResponse getRecordById(Long recordId) {
+        RecordHiking record = recordHikingRepository.findById(recordId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 기록이 없습니다."));
+        return RecordHikingResponse.from(record);
+    }
+
+    public void edit(Long recordId, String mountainName, LocalDate recordDate, String content, MultipartFile photo) {
+        RecordHiking record = recordHikingRepository.findById(recordId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 기록이 없습니다."));
+
+        if (mountainName != null) record.setMountainName(mountainName);
+        if (recordDate != null) record.setRecordDate(recordDate);
+        if (content != null) record.setContent(content);
+
+        if (photo != null && !photo.isEmpty()) {
+            String fileName = UUID.randomUUID() + "_" + photo.getOriginalFilename();
+            String uploadDir = System.getProperty("user.dir") + "/services/record-service/uploads";
+            Path filePath = Paths.get(uploadDir, fileName);
+            try {
+                Files.createDirectories(Paths.get(uploadDir));
+                Files.copy(photo.getInputStream(), filePath);
+                record.setPhotoUrl("/uploads/" + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException("사진 저장 실패", e);
+            }
+        }
+
+        recordHikingRepository.save(record);
+    }
+
     public void delete(Long recordId) {
         recordHikingRepository.deleteById(recordId);
     }
