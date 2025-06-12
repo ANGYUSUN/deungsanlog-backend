@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -86,6 +85,8 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         }
     }
 
+    // ===== GlobalGatewayFilter.java =====
+
     /**
      * 인증이 필요 없는 공개 경로 체크
      */
@@ -93,7 +94,10 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         return path.startsWith("/auth/") ||
                 path.startsWith("/actuator/") ||
                 path.startsWith("/fallback/") ||
-                path.equals("/user-service/api/users/status");
+                path.startsWith("/user-service/") ||
+                path.startsWith("/record-service/") ||
+                path.startsWith("/ormie-service/") ||
+                path.startsWith("/mountain-service/");
     }
 
     /**

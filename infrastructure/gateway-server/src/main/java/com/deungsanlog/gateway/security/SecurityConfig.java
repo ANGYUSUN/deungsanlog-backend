@@ -39,17 +39,21 @@ public class SecurityConfig {
                 // Spring Security의 기본 폼 로그인 기능 (HTML 로그인 페이지 제공)을 비활성화
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
 
+
                 // 경로별 인증 설정
                 .authorizeExchange(exchanges -> exchanges
                         // 인증이 필요하지 않은 경로들 (GlobalGatewayFilter와 일치)
                         .pathMatchers("/auth/**").permitAll()                    // OAuth2 인증 관련
                         .pathMatchers("/actuator/**").permitAll()                // 헬스체크
                         .pathMatchers("/fallback/**").permitAll()                // Fallback 경로
-                        .pathMatchers("/user-service/api/users/status").permitAll() // 상태 체크
-                        .pathMatchers("/user-service/api/users/**").permitAll()
+                        .pathMatchers("/user-service/**").permitAll()            // 유저 서비스 전체
+                        .pathMatchers("/record-service/**").permitAll()          // 레코드 서비스 전체
+                        .pathMatchers("/ormie-service/**").permitAll()           // 오르미 서비스 전체
+                        .pathMatchers("/mountain-service/**").permitAll()        // 마운틴 서비스 전체
                         // 나머지 모든 HTTP 요청에 대해 인증된 사용자만 접근 가능하도록 설정
                         .anyExchange().authenticated()
                 )
+
 
                 // Spring Security의 기본 인증 필터 자리에 JWT 필터를 끼워 넣기
                 .addFilterAt(jwtWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
