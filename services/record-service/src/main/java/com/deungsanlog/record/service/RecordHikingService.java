@@ -106,6 +106,22 @@ public class RecordHikingService {
     }
 
     public void delete(Long recordId) {
+        RecordHiking record = recordHikingRepository.findById(recordId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 기록이 없습니다."));
+
+        // 파일 경로 추출 및 삭제
+        String photoUrl = record.getPhotoUrl();
+        if (photoUrl != null && !photoUrl.isBlank()) {
+            String uploadDir = System.getProperty("user.dir") + "/services/record-service";
+            Path filePath = Paths.get(uploadDir, photoUrl);
+            try {
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                // 파일 삭제 실패 시 로그만 남기고 진행
+                System.err.println("사진 파일 삭제 실패: " + filePath);
+            }
+        }
+
         recordHikingRepository.deleteById(recordId);
     }
 }

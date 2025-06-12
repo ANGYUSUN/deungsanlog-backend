@@ -47,7 +47,7 @@ public class RecordController {
         return ResponseEntity.ok("등산 기록이 성공적으로 저장되었습니다!");
     }
 
-    @GetMapping("/records/{recordId}")
+    @GetMapping("/record/{recordId}")
     public ResponseEntity<RecordHikingResponse> getRecordById(
             @PathVariable("recordId") Long recordId
     ) {
