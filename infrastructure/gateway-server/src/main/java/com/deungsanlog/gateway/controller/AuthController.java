@@ -1,11 +1,8 @@
 package com.deungsanlog.gateway.controller;
 
 import com.deungsanlog.gateway.component.JwtTokenProvider;
-import com.deungsanlog.gateway.dto.GoogleTokenResponse;
-import com.deungsanlog.gateway.dto.GoogleUserInfo;
+import com.deungsanlog.gateway.dto.*;
 import com.deungsanlog.gateway.service.UserServiceClient;
-import com.deungsanlog.gateway.dto.UserCreateRequest;
-import com.deungsanlog.gateway.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +16,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -31,69 +31,163 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserServiceClient userServiceClient;
     private final WebClient webClient = WebClient.builder().build();
-
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private final String googleRedirectUri = "http://localhost:8080/auth/google/callback";
+    private final String naverRedirectUri = "http://localhost:8080/auth/naver/callback";
+    // Google 설정
+    @Value("${google.oauth.client-id}")
     private String googleClientId;
-
-    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    @Value("${google.oauth.client-secret}")
     private String googleClientSecret;
-
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
-    private String redirectUri;
+    // 네이버 설정
+    @Value("${naver.oauth.client-id}")
+    private String naverClientId;
+    @Value("${naver.oauth.client-secret}")
+    private String naverClientSecret;
 
     /**
-     * Google OAuth2 로그인 시작점
-     * 프론트엔드에서 이 URL로 리다이렉트하면 Google 로그인 페이지로 이동
+     * Google OAuth2 로그인 시작점 - 바로 Google로 리다이렉트
      */
     @GetMapping("/google")
-    public Mono<ResponseEntity<Map<String, String>>> googleLogin() {
-        log.info("Google OAuth2 로그인 시작");
+    public Mono<ResponseEntity<Void>> googleLogin() {
+        log.info("Google OAuth2 로그인 시작 - 바로 리다이렉트");
 
         String googleAuthUrl = "https://accounts.google.com/o/oauth2/auth"
                 + "?client_id=" + googleClientId
-                + "&redirect_uri=" + redirectUri
-                + "&scope=email profile"
+                + "&redirect_uri=" + googleRedirectUri
+                + "&scope=email%20profile"  // 공백을 %20으로 인코딩
                 + "&response_type=code"
                 + "&access_type=offline";
 
-        log.info("Google 인증 URL 생성: {}", googleAuthUrl);
+        log.info("Google 인증 URL로 리다이렉트: {}", googleAuthUrl);
 
-        Map<String, String> response = Map.of(
-                "authUrl", googleAuthUrl,
-                "message", "Google 로그인 페이지로 리다이렉트하세요"
-        );
-
-        return Mono.just(ResponseEntity.ok(response));
+        // 바로 Google 로그인 페이지로 리다이렉트
+        return Mono.just(ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(googleAuthUrl))
+                .build());
     }
 
     /**
-     * Google OAuth2 콜백 처리
-     * Google에서 인증 완료 후 이 엔드포인트로 code와 함께 리다이렉트됨
+     * 네이버 OAuth2 로그인 시작점 - 바로 네이버로 리다이렉트
+     */
+    @GetMapping("/naver")
+    public Mono<ResponseEntity<Void>> naverLogin() {
+        log.info("네이버 OAuth2 로그인 시작 - 바로 리다이렉트");
+
+        String naverAuthUrl = "https://nid.naver.com/oauth2.0/authorize"
+                + "?client_id=" + naverClientId
+                + "&redirect_uri=" + naverRedirectUri
+                + "&scope=name%20email"  // 공백을 %20으로 인코딩
+                + "&response_type=code"
+                + "&state=RANDOM_STATE_STRING"; // 보안을 위한 state 파라미터
+
+        log.info("네이버 인증 URL로 리다이렉트: {}", naverAuthUrl);
+
+        // 바로 네이버 로그인 페이지로 리다이렉트
+        return Mono.just(ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(naverAuthUrl))
+                .build());
+    }
+
+    /**
+     * Google OAuth2 콜백 처리 - 프론트엔드로 리다이렉트
      */
     @GetMapping("/google/callback")
-    public Mono<ResponseEntity<Map<String, Object>>> googleCallback(@RequestParam String code) {
+    public Mono<ResponseEntity<Void>> googleCallback(@RequestParam String code) {
         log.info("Google OAuth2 콜백 처리 시작: code={}", code);
 
-        return exchangeCodeForToken(code)
-                .flatMap(this::getUserInfoFromGoogle)
-                .flatMap(this::saveUserToUserService)
-                .flatMap(this::generateJwtResponse)
-                .doOnSuccess(response -> log.info("OAuth2 로그인 성공"))
+        return exchangeGoogleCodeForToken(code)
+                .flatMap(this::getGoogleUserInfo)
+                .flatMap(this::saveGoogleUserToUserService)
+                .map(userResponse -> {
+                    try {
+                        // JWT 토큰 생성
+                        String jwtToken = jwtTokenProvider.generateToken(
+                                userResponse.getEmail(),
+                                List.of("ROLE_USER"),
+                                userResponse.getId()
+                        );
+
+                        // 프론트엔드로 토큰과 함께 리다이렉트
+                        String redirectUrl = "http://localhost:5173/login?token=" + jwtToken;
+
+                        return ResponseEntity.status(HttpStatus.FOUND)
+                                .location(URI.create(redirectUrl))
+                                .<Void>build();
+                    } catch (Exception e) {
+                        log.error("JWT 토큰 생성 실패", e);
+                        String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                                URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
+
+                        return ResponseEntity.status(HttpStatus.FOUND)
+                                .location(URI.create(errorRedirectUrl))
+                                .<Void>build();
+                    }
+                })
                 .onErrorResume(error -> {
-                    log.error("OAuth2 로그인 실패", error);
-                    Map<String, Object> errorResponse = Map.of(
-                            "success", false,
-                            "error", "OAuth2 로그인 실패",
-                            "message", error.getMessage()
-                    );
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
+                    log.error("Google OAuth2 로그인 실패", error);
+                    String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                            URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
+
+                    ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
+                            .location(URI.create(errorRedirectUrl))
+                            .build();
+
+                    return Mono.just(errorResponse);
                 });
     }
 
     /**
-     * Step 1: Google에서 Authorization Code를 Access Token으로 교환
+     * 네이버 OAuth2 콜백 처리 - 프론트엔드로 리다이렉트
      */
-    private Mono<String> exchangeCodeForToken(String code) {
+    @GetMapping("/naver/callback")
+    public Mono<ResponseEntity<Void>> naverCallback(
+            @RequestParam String code,
+            @RequestParam String state) {
+        log.info("네이버 OAuth2 콜백 처리 시작: code={}, state={}", code, state);
+
+        return exchangeNaverCodeForToken(code, state)
+                .flatMap(this::getNaverUserInfo)
+                .flatMap(this::saveNaverUserToUserService)
+                .map(userResponse -> {
+                    try {
+                        // JWT 토큰 생성
+                        String jwtToken = jwtTokenProvider.generateToken(
+                                userResponse.getEmail(),
+                                List.of("ROLE_USER"),
+                                userResponse.getId()
+                        );
+
+                        // 프론트엔드로 토큰과 함께 리다이렉트
+                        String redirectUrl = "http://localhost:5173/login?token=" + jwtToken;
+
+                        return ResponseEntity.status(HttpStatus.FOUND)
+                                .location(URI.create(redirectUrl))
+                                .<Void>build();
+                    } catch (Exception e) {
+                        log.error("JWT 토큰 생성 실패", e);
+                        String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                                URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
+
+                        return ResponseEntity.status(HttpStatus.FOUND)
+                                .location(URI.create(errorRedirectUrl))
+                                .<Void>build();
+                    }
+                })
+                .onErrorResume(error -> {
+                    log.error("네이버 OAuth2 로그인 실패", error);
+                    String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                            URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
+
+                    ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
+                            .location(URI.create(errorRedirectUrl))
+                            .build();
+
+                    return Mono.just(errorResponse);
+                });
+    }
+
+    // Google 관련 메서드들
+    private Mono<String> exchangeGoogleCodeForToken(String code) {
         log.info("Google Access Token 요청 시작");
 
         String tokenUrl = "https://oauth2.googleapis.com/token";
@@ -103,7 +197,7 @@ public class AuthController {
         formData.add("client_secret", googleClientSecret);
         formData.add("code", code);
         formData.add("grant_type", "authorization_code");
-        formData.add("redirect_uri", redirectUri);
+        formData.add("redirect_uri", googleRedirectUri);
 
         return webClient.post()
                 .uri(tokenUrl)
@@ -115,10 +209,7 @@ public class AuthController {
                 .doOnSuccess(token -> log.info("Google Access Token 획득 성공"));
     }
 
-    /**
-     * Step 2: Access Token으로 Google에서 사용자 정보 조회
-     */
-    private Mono<GoogleUserInfo> getUserInfoFromGoogle(String accessToken) {
+    private Mono<GoogleUserInfo> getGoogleUserInfo(String accessToken) {
         log.info("Google 사용자 정보 요청 시작");
 
         String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
@@ -131,11 +222,8 @@ public class AuthController {
                 .doOnSuccess(userInfo -> log.info("Google 사용자 정보 획득 성공: email={}", userInfo.getEmail()));
     }
 
-    /**
-     * Step 3: User Service에 사용자 정보 저장/업데이트
-     */
-    private Mono<UserResponse> saveUserToUserService(GoogleUserInfo googleUser) {
-        log.info("User Service에 사용자 정보 저장 시작: email={}", googleUser.getEmail());
+    private Mono<UserResponse> saveGoogleUserToUserService(GoogleUserInfo googleUser) {
+        log.info("User Service에 Google 사용자 정보 저장 시작: email={}", googleUser.getEmail());
 
         UserCreateRequest request = UserCreateRequest.builder()
                 .email(googleUser.getEmail())
@@ -148,43 +236,56 @@ public class AuthController {
         return userServiceClient.saveOrUpdateUser(request);
     }
 
-    /**
-     * Step 4: JWT 토큰 생성 후 응답
-     */
-    private Mono<ResponseEntity<Map<String, Object>>> generateJwtResponse(UserResponse user) {
-        log.info("JWT 토큰 생성 시작: userId={}", user.getId());
+    // 네이버 관련 메서드들
+    private Mono<String> exchangeNaverCodeForToken(String code, String state) {
+        log.info("네이버 Access Token 요청 시작");
 
-        try {
-            // 멘토님의 JwtTokenProvider 사용
-            String jwtToken = jwtTokenProvider.generateToken(
-                    user.getEmail(),
-                    List.of("ROLE_USER"), // 기본 권한
-                    user.getId()
-            );
+        String tokenUrl = "https://nid.naver.com/oauth2.0/token";
 
-            Map<String, Object> response = Map.of(
-                    "success", true,
-                    "token", jwtToken,
-                    "user", Map.of(
-                            "id", user.getId(),
-                            "email", user.getEmail(),
-                            "nickname", user.getNickname(),
-                            "profileImgUrl", user.getProfileImgUrl() != null ? user.getProfileImgUrl() : ""
-                    )
-            );
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("client_id", naverClientId);
+        formData.add("client_secret", naverClientSecret);
+        formData.add("code", code);
+        formData.add("state", state);
+        formData.add("grant_type", "authorization_code");
 
-            log.info("JWT 토큰 생성 완료: userId={}", user.getId());
-            return Mono.just(ResponseEntity.ok(response));
+        return webClient.post()
+                .uri(tokenUrl)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData(formData))
+                .retrieve()
+                .bodyToMono(NaverTokenResponse.class)
+                .map(NaverTokenResponse::getAccessToken)
+                .doOnSuccess(token -> log.info("네이버 Access Token 획득 성공"));
+    }
 
-        } catch (Exception e) {
-            log.error("JWT 토큰 생성 실패", e);
-            Map<String, Object> errorResponse = Map.of(
-                    "success", false,
-                    "error", "JWT 토큰 생성 실패",
-                    "message", e.getMessage()
-            );
-            return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
-        }
+    private Mono<NaverUserInfo> getNaverUserInfo(String accessToken) {
+        log.info("네이버 사용자 정보 요청 시작");
+
+        String userInfoUrl = "https://openapi.naver.com/v1/nid/me";
+
+        return webClient.get()
+                .uri(userInfoUrl)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(NaverUserInfo.class)
+                .doOnSuccess(userInfo -> log.info("네이버 사용자 정보 획득 성공: email={}",
+                        userInfo.getResponse().getEmail()));
+    }
+
+    private Mono<UserResponse> saveNaverUserToUserService(NaverUserInfo naverUser) {
+        NaverUserInfo.Response response = naverUser.getResponse();
+        log.info("User Service에 네이버 사용자 정보 저장 시작: email={}", response.getEmail());
+
+        UserCreateRequest request = UserCreateRequest.builder()
+                .email(response.getEmail())
+                .nickname(response.getNickname() != null ? response.getNickname() : response.getName())
+                .profileImgUrl(response.getProfileImage())
+                .provider("naver")
+                .providerId(response.getId())
+                .build();
+
+        return userServiceClient.saveOrUpdateUser(request);
     }
 
     /**
