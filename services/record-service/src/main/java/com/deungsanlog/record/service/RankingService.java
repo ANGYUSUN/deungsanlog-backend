@@ -72,37 +72,38 @@ public class RankingService {
             }
         }
         // 2) 내 순위 시도 (윈도우 함수)
-        Object[] myRow = recordHikingRepository.findMyRanking(userId);
         UserRankingResponse myRank = null;
+        if (userId != null) {
+            Object[] myRow = recordHikingRepository.findMyRanking(userId);
 
-        if (myRow != null && myRow.length == 3) {
-            // 정상적으로 window 함수 결과가 있을 때
-            int myRankNum = Integer.parseInt(myRow[0].toString());
-            Long myId = Long.parseLong(myRow[1].toString());
-            int cnt = Integer.parseInt(myRow[2].toString());
-            String nick = userClient.getNickname(myId);
-            myRank = UserRankingResponse.builder()
-                    .rank(myRankNum)
-                    .userId(myId)
-                    .nickname(nick)
-                    .recordCount(cnt)
-                    .build();
-        } else {
-            // fallback: 내 기록 개수 구하고, 그보다 많은 유저 수 +1 을 내 순위로 계산
-            int myCount = recordHikingRepository.countByUserId(userId);
-            if (myCount > 0) {
-                int higherCount = recordHikingRepository.countUsersWithMoreRecords(myCount);
-                String nick = userClient.getNickname(userId);
+            if (myRow != null && myRow.length == 3) {
+                // 정상적으로 window 함수 결과가 있을 때
+                int myRankNum = Integer.parseInt(myRow[0].toString());
+                Long myId = Long.parseLong(myRow[1].toString());
+                int cnt = Integer.parseInt(myRow[2].toString());
+                String nick = userClient.getNickname(myId);
                 myRank = UserRankingResponse.builder()
-                        .rank(higherCount + 1)
-                        .userId(userId)
+                        .rank(myRankNum)
+                        .userId(myId)
                         .nickname(nick)
-                        .recordCount(myCount)
+                        .recordCount(cnt)
                         .build();
+            } else {
+                // fallback: 내 기록 개수 구하고, 그보다 많은 유저 수 +1 을 내 순위로 계산
+                int myCount = recordHikingRepository.countByUserId(userId);
+                if (myCount > 0) {
+                    int higherCount = recordHikingRepository.countUsersWithMoreRecords(myCount);
+                    String nick = userClient.getNickname(userId);
+                    myRank = UserRankingResponse.builder()
+                            .rank(higherCount + 1)
+                            .userId(userId)
+                            .nickname(nick)
+                            .recordCount(myCount)
+                            .build();
+                }
+                // myCount==0 이면 myRank는 여전히 null → 기록 없는 유저
             }
-            // myCount==0 이면 myRank는 여전히 null → 기록 없는 유저
         }
-
         return RankingsResponse.builder()
                 .topRankers(topRankers)
                 .myRank(myRank)

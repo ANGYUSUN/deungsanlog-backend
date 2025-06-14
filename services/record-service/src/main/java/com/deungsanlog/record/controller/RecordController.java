@@ -56,11 +56,10 @@ public class RecordController {
     }
 
     @GetMapping("/rankings")
-    public ResponseEntity<RankingsResponse> getRankings(@RequestParam Long userId) {
+    public ResponseEntity<RankingsResponse> getRankings(@RequestParam(required = false) Long userId) {
         RankingsResponse response = rankingService.getRankingInfo(userId);
         return ResponseEntity.ok(response);
     }
-
 
     @PutMapping("/edit")
     public ResponseEntity<String> editRecord(
