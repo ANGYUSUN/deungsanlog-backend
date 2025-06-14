@@ -22,18 +22,55 @@ public class RankingService {
         List<Object[]> topResults = recordHikingRepository.findTopRankers();
         List<UserRankingResponse> topRankers = new ArrayList<>();
         int rankCursor = 1;
+        int sameRankCount = 0;
+        Integer prevCount = null;
+        int lastRank = 0;
+
         for (Object[] row : topResults) {
+            if (row.length < 2) continue;
+
             Long uid = Long.parseLong(row[0].toString());
             int cnt = Integer.parseInt(row[1].toString());
             String nick = userClient.getNickname(uid);
+
+            if (prevCount != null && cnt == prevCount) {
+                sameRankCount++;
+            } else {
+                rankCursor += sameRankCount;
+                sameRankCount = 1;
+            }
+            prevCount = cnt;
+
+            if (rankCursor > 10) break; // 10등 초과 시 중단
+
             topRankers.add(UserRankingResponse.builder()
-                    .rank(rankCursor++)
+                    .rank(rankCursor)
                     .userId(uid)
                     .nickname(nick)
                     .recordCount(cnt)
                     .build());
+
+            lastRank = rankCursor;
         }
 
+// 10등이 여러 명일 경우 모두 포함
+        for (int i = topRankers.size(); i < topResults.size(); i++) {
+            Object[] row = topResults.get(i);
+            if (row.length < 2) continue;
+            int cnt = Integer.parseInt(row[1].toString());
+            if (cnt == prevCount && lastRank == 10) {
+                Long uid = Long.parseLong(row[0].toString());
+                String nick = userClient.getNickname(uid);
+                topRankers.add(UserRankingResponse.builder()
+                        .rank(lastRank)
+                        .userId(uid)
+                        .nickname(nick)
+                        .recordCount(cnt)
+                        .build());
+            } else {
+                break;
+            }
+        }
         // 2) 내 순위 시도 (윈도우 함수)
         Object[] myRow = recordHikingRepository.findMyRanking(userId);
         UserRankingResponse myRank = null;
@@ -71,6 +108,4 @@ public class RankingService {
                 .myRank(myRank)
                 .build();
     }
-
-
 }
