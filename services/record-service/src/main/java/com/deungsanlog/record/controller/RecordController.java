@@ -1,7 +1,9 @@
 package com.deungsanlog.record.controller;
 
+import com.deungsanlog.record.dto.HotMountainResponse;
 import com.deungsanlog.record.dto.RankingsResponse;
 import com.deungsanlog.record.dto.RecordHikingResponse;
+import com.deungsanlog.record.service.HotMountainService;
 import com.deungsanlog.record.service.RankingService;
 import com.deungsanlog.record.service.RecordHikingService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.Map;
 public class RecordController {
 
     private final RecordHikingService recordHikingService;
+    private final HotMountainService hotMountainService;
     private final RankingService rankingService;
 
     @GetMapping("/status")
@@ -53,6 +56,13 @@ public class RecordController {
     ) {
         RecordHikingResponse record = recordHikingService.getRecordById(recordId);
         return ResponseEntity.ok(record);
+    }
+
+    @GetMapping("/hot-mountains")
+    public ResponseEntity<List<HotMountainResponse>> getHotMountains(
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return ResponseEntity.ok(hotMountainService.getHotMountains(limit));
     }
 
     @GetMapping("/rankings")
