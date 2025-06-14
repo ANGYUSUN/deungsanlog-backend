@@ -1,6 +1,8 @@
 package com.deungsanlog.record.controller;
 
+import com.deungsanlog.record.dto.RankingsResponse;
 import com.deungsanlog.record.dto.RecordHikingResponse;
+import com.deungsanlog.record.service.RankingService;
 import com.deungsanlog.record.service.RecordHikingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,6 +20,7 @@ import java.util.Map;
 public class RecordController {
 
     private final RecordHikingService recordHikingService;
+    private final RankingService rankingService;
 
     @GetMapping("/status")
     public Map<String, String> getStatus() {
@@ -52,6 +55,12 @@ public class RecordController {
         return ResponseEntity.ok(record);
     }
 
+    @GetMapping("/rankings")
+    public ResponseEntity<RankingsResponse> getRankings(@RequestParam(required = false) Long userId) {
+        RankingsResponse response = rankingService.getRankingInfo(userId);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/edit")
     public ResponseEntity<String> editRecord(
             @RequestParam("recordId") Long recordId,
@@ -69,4 +78,6 @@ public class RecordController {
         recordHikingService.delete(recordId);
         return ResponseEntity.ok("등산 기록이 성공적으로 삭제되었습니다!");
     }
+
+
 }
