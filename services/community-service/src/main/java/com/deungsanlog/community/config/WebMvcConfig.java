@@ -8,8 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String uploadPath = System.getProperty("user.dir") + "/uploads/";
-        registry.addResourceHandler("/community-service/uploads/**")
-                .addResourceLocations("file:" + uploadPath);
+        registry.addResourceHandler("/api/communities/uploads/**")
+                .addResourceLocations("file:C:/sw-project/deungsanlog-backend/services/community-service/uploads/");
     }
 }
