@@ -48,7 +48,8 @@ public class SecurityConfig {
                         .pathMatchers("/fallback/**").permitAll()                // Fallback 경로
                         .pathMatchers("/user-service/**").permitAll()            // 유저 서비스 전체
                         .pathMatchers("/record-service/**").permitAll()          // 레코드 서비스 전체
-                        .pathMatchers("/ormie-service/**").permitAll()           // 오르미 서비스 전체
+                        .pathMatchers("/ormie-service/**").permitAll()
+                        .pathMatchers("/community-service/**").permitAll()
                         .pathMatchers("/mountain-service/**").permitAll()        // 마운틴 서비스 전체
                         // 나머지 모든 HTTP 요청에 대해 인증된 사용자만 접근 가능하도록 설정
                         .anyExchange().authenticated()

@@ -97,6 +97,7 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
                 path.startsWith("/user-service/") ||
                 path.startsWith("/record-service/") ||
                 path.startsWith("/ormie-service/") ||
+                path.startsWith("/community-service/") ||
                 path.startsWith("/mountain-service/");
     }
 
