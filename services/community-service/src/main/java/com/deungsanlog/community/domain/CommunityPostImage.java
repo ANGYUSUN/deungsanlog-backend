@@ -37,4 +37,10 @@ public class CommunityPostImage {
     public void prePersist() {
         createdAt = LocalDateTime.now();
     }
+
+    public String getFileName() {
+        if (imageUrl == null) return null;
+        int idx = imageUrl.lastIndexOf('/');
+        return idx >= 0 ? imageUrl.substring(idx + 1) : imageUrl;
+    }
 }

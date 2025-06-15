@@ -9,4 +9,6 @@ public interface CommunityPostService {
     CommunityPostResponse createPost(CommunityPostCreateRequest request);
 
     List<CommunityPostResponse> getAllPosts();
+
+    void deletePost(Long postId);
 }

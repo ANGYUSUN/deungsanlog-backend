@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,6 +91,25 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void deletePost(Long postId) {
+        // 이미지 정보 조회
+        List<CommunityPostImage> images = imageRepository.findAllByPostId(postId);
+        // 파일 시스템에서 이미지 삭제
+        for (CommunityPostImage image : images) {
+            String filePath = "C:/sw-project/deungsanlog-backend/services/community-service/uploads/" + image.getFileName();
+            File file = new File(filePath);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+        // DB에서 이미지 정보 삭제
+        imageRepository.deleteAll(images);
+        // 게시글 삭제
+        postRepository.deleteById(postId);
     }
 
 

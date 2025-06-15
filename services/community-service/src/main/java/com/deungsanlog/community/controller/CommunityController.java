@@ -65,4 +65,11 @@ public class CommunityController {
 
         return ResponseEntity.ok(fileUrls);
     }
+
+    // 게시글 삭제
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
+        communityPostService.deletePost(postId);
+        return ResponseEntity.noContent().build();
+    }
 }
