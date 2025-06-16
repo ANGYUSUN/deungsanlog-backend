@@ -22,5 +22,13 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
     @Query("UPDATE CommunityPost p SET p.likeCount = p.likeCount - 1 WHERE p.id = :postId AND p.likeCount > 0")
     void decrementLikeCount(@Param("postId") Long postId);
 
+    @Modifying
+    @Query("UPDATE CommunityPost p SET p.commentCount = p.commentCount + 1 WHERE p.id = :postId")
+    void incrementCommentCount(@Param("postId") Long postId);
+
+    @Modifying
+    @Query("UPDATE CommunityPost p SET p.commentCount = p.commentCount - 1 WHERE p.id = :postId AND p.commentCount > 0")
+    void decrementCommentCount(@Param("postId") Long postId);
+
     List<CommunityPost> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }
