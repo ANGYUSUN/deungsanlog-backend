@@ -12,6 +12,8 @@ public interface CommunityPostService {
 
     CommunityPostResponse getPostById(Long postId);
 
+    List<CommunityPostResponse> getRecentPosts(int limit);
+
     void deletePost(Long postId);
 
     void likePost(Long postId, Long userId);

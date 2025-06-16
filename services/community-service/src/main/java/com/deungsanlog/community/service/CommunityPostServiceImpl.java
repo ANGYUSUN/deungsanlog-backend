@@ -10,6 +10,7 @@ import com.deungsanlog.community.repository.CommunityPostImageRepository;
 import com.deungsanlog.community.repository.CommunityPostLikeRepository;
 import com.deungsanlog.community.repository.CommunityPostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,6 +123,38 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommunityPostResponse> getRecentPosts(int limit) {
+        List<CommunityPost> posts = communityPostRepository
+                .findAllByOrderByCreatedAtDesc(PageRequest.of(0, limit));
+        return posts.stream()
+                .map(post -> {
+                    String nickname = userClient.getNickname(post.getUserId());
+                    List<String> imageUrls = imageRepository.findAllByPostId(post.getId())
+                            .stream()
+                            .map(CommunityPostImage::getImageUrl)
+                            .toList();
+
+                    return CommunityPostResponse.builder()
+                            .id(post.getId())
+                            .userId(post.getUserId())
+                            .nickname(nickname)
+                            .mountainId(post.getMountainId())
+                            .title(post.getTitle())
+                            .content(post.getContent())
+                            .hasImage(post.isHasImage())
+                            .likeCount(post.getLikeCount())
+                            .commentCount(post.getCommentCount())
+                            .createdAt(post.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .updatedAt(post.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .imageUrls(imageUrls)
+                            .build();
+                })
+                .toList();
     }
 
     @Override

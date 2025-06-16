@@ -72,6 +72,12 @@ public class CommunityController {
         return ResponseEntity.ok(post);
     }
 
+    @GetMapping("/posts/preview")
+    public ResponseEntity<List<CommunityPostResponse>> getRecentPostsPreview() {
+        List<CommunityPostResponse> recent10 = communityPostService.getRecentPosts(10);
+        return ResponseEntity.ok(recent10);
+    }
+
     // 게시글 삭제
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
