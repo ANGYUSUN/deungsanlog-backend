@@ -13,6 +13,13 @@ spring:
     password: ${db.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 10000
+      max-lifetime: 30000
+      leak-detection-threshold: 10000
+
   batch:
     jdbc:
       initialize-schema: always
