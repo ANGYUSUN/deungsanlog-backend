@@ -2,6 +2,8 @@ package com.deungsanlog.community.controller;
 
 import com.deungsanlog.community.dto.CommunityPostCreateRequest;
 import com.deungsanlog.community.dto.CommunityPostResponse;
+import com.deungsanlog.community.dto.CommunityPostUpdateRequest;
+import com.deungsanlog.community.repository.CommunityPostLikeRepository;
 import com.deungsanlog.community.service.CommunityPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.UUID;
 public class CommunityController {
 
     private final CommunityPostService communityPostService;
+    private final CommunityPostLikeRepository communityPostLikeRepository;
 
     @GetMapping("/status")
     public Map<String, String> status() {
@@ -78,6 +81,15 @@ public class CommunityController {
         return ResponseEntity.ok(recent10);
     }
 
+    // 게시글 수정
+    @PutMapping("/posts/{postId}")
+    public ResponseEntity<CommunityPostResponse> updatePost(
+            @PathVariable Long postId,
+            @RequestBody CommunityPostUpdateRequest request) {
+        CommunityPostResponse updated = communityPostService.updatePost(postId, request);
+        return ResponseEntity.ok(updated);
+    }
+
     // 게시글 삭제
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
@@ -97,5 +109,14 @@ public class CommunityController {
     public ResponseEntity<Void> unlikePost(@PathVariable Long postId, @RequestParam Long userId) {
         communityPostService.unlikePost(postId, userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/posts/{postId}/like/status")
+    public ResponseEntity<Boolean> isPostLiked(
+            @PathVariable Long postId,
+            @RequestParam Long userId
+    ) {
+        boolean isLiked = communityPostLikeRepository.existsByPostIdAndUserId(postId, userId);
+        return ResponseEntity.ok(isLiked);
     }
 }

@@ -6,6 +6,7 @@ import com.deungsanlog.community.domain.CommunityPostImage;
 import com.deungsanlog.community.domain.CommunityPostLike;
 import com.deungsanlog.community.dto.CommunityPostCreateRequest;
 import com.deungsanlog.community.dto.CommunityPostResponse;
+import com.deungsanlog.community.dto.CommunityPostUpdateRequest;
 import com.deungsanlog.community.repository.CommunityPostImageRepository;
 import com.deungsanlog.community.repository.CommunityPostLikeRepository;
 import com.deungsanlog.community.repository.CommunityPostRepository;
@@ -155,6 +156,37 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                             .build();
                 })
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public CommunityPostResponse updatePost(Long postId, CommunityPostUpdateRequest request) {
+        CommunityPost post = communityPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        post.setTitle(request.getTitle());
+        post.setContent(request.getContent());
+        post.setMountainId(request.getMountainId());
+        post.setHasImage(request.getImageUrls() != null && !request.getImageUrls().isEmpty());
+
+        // 기존 이미지 삭제
+        List<CommunityPostImage> oldImages = imageRepository.findAllByPostId(postId);
+        imageRepository.deleteAll(oldImages);
+
+        // 새 이미지 저장
+        List<CommunityPostImage> newImages = request.getImageUrls() != null
+                ? request.getImageUrls().stream()
+                .map(url -> CommunityPostImage.builder()
+                        .post(post)
+                        .imageUrl(url)
+                        .build())
+                .toList()
+                : List.of();
+        imageRepository.saveAll(newImages);
+
+        communityPostRepository.save(post);
+
+        return getPostById(postId);
     }
 
     @Override
