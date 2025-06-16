@@ -55,4 +55,8 @@ public class CommunityPost {
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
 }

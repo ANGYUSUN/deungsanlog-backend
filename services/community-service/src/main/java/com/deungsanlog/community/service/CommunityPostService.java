@@ -10,5 +10,11 @@ public interface CommunityPostService {
 
     List<CommunityPostResponse> getAllPosts();
 
+    CommunityPostResponse getPostById(Long postId);
+
     void deletePost(Long postId);
+
+    void likePost(Long postId, Long userId);
+
+    void unlikePost(Long postId, Long userId);
 }

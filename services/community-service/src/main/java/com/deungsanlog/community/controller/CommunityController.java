@@ -66,10 +66,30 @@ public class CommunityController {
         return ResponseEntity.ok(fileUrls);
     }
 
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<CommunityPostResponse> getPostById(@PathVariable Long postId) {
+        CommunityPostResponse post = communityPostService.getPostById(postId);
+        return ResponseEntity.ok(post);
+    }
+
     // 게시글 삭제
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
         communityPostService.deletePost(postId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 게시글 좋아요
+    @PostMapping("/posts/{postId}/like")
+    public ResponseEntity<Void> likePost(@PathVariable Long postId, @RequestParam Long userId) {
+        communityPostService.likePost(postId, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    // 게시글 좋아요 취소
+    @DeleteMapping("/posts/{postId}/like")
+    public ResponseEntity<Void> unlikePost(@PathVariable Long postId, @RequestParam Long userId) {
+        communityPostService.unlikePost(postId, userId);
         return ResponseEntity.noContent().build();
     }
 }

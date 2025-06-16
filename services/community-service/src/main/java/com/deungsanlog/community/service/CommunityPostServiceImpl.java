@@ -3,9 +3,11 @@ package com.deungsanlog.community.service;
 import com.deungsanlog.community.client.UserClient;
 import com.deungsanlog.community.domain.CommunityPost;
 import com.deungsanlog.community.domain.CommunityPostImage;
+import com.deungsanlog.community.domain.CommunityPostLike;
 import com.deungsanlog.community.dto.CommunityPostCreateRequest;
 import com.deungsanlog.community.dto.CommunityPostResponse;
 import com.deungsanlog.community.repository.CommunityPostImageRepository;
+import com.deungsanlog.community.repository.CommunityPostLikeRepository;
 import com.deungsanlog.community.repository.CommunityPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,9 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     private final CommunityPostRepository postRepository;
     private final CommunityPostImageRepository imageRepository;
     private final CommunityPostRepository communityPostRepository;
-    private final UserClient userClient; // 유저 서비스 호출을 위한 클라이언트
+    private final UserClient userClient;
+    private final CommunityPostLikeRepository likeRepository;
+    private final CommunityPostLikeRepository communityPostLikeRepository;
 
     @Override
     @Transactional
@@ -62,6 +66,34 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .build();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public CommunityPostResponse getPostById(Long postId) {
+        CommunityPost post = communityPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        String nickname = userClient.getNickname(post.getUserId());
+
+        List<String> imageUrls = imageRepository.findAllByPostId(post.getId()).stream()
+                .map(CommunityPostImage::getImageUrl)
+                .collect(Collectors.toList());
+
+        return CommunityPostResponse.builder()
+                .id(post.getId())
+                .userId(post.getUserId())
+                .nickname(nickname)
+                .mountainId(post.getMountainId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .hasImage(post.isHasImage())
+                .likeCount(post.getLikeCount())
+                .commentCount(post.getCommentCount())
+                .createdAt(post.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                .updatedAt(post.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                .imageUrls(imageUrls)
+                .build();
+    }
+
     public List<CommunityPostResponse> getAllPosts() {
         List<CommunityPost> posts = communityPostRepository.findAll();
 
@@ -69,7 +101,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .map(post -> {
                     String nickname = userClient.getNickname(post.getUserId());
 
-                    // 이미지 목록 불러오기
                     List<String> imageUrls = imageRepository.findAllByPostId(post.getId())
                             .stream()
                             .map(CommunityPostImage::getImageUrl)
@@ -96,9 +127,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     @Override
     @Transactional
     public void deletePost(Long postId) {
-        // 이미지 정보 조회
         List<CommunityPostImage> images = imageRepository.findAllByPostId(postId);
-        // 파일 시스템에서 이미지 삭제
         for (CommunityPostImage image : images) {
             String filePath = "C:/sw-project/deungsanlog-backend/services/community-service/uploads/" + image.getFileName();
             File file = new File(filePath);
@@ -106,11 +135,38 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 file.delete();
             }
         }
-        // DB에서 이미지 정보 삭제
         imageRepository.deleteAll(images);
-        // 게시글 삭제
         postRepository.deleteById(postId);
     }
 
+    @Override
+    @Transactional
+    public void likePost(Long postId, Long userId) {
+        if (communityPostLikeRepository.existsByPostIdAndUserId(postId, userId)) {
+            throw new IllegalStateException("이미 좋아요를 누른 게시글입니다.");
+        }
+
+        CommunityPostLike like = CommunityPostLike.builder()
+                .postId(postId)
+                .userId(userId)
+                .build();
+        communityPostLikeRepository.save(like);
+
+        // ✅ 좋아요 수 증가
+        communityPostRepository.incrementLikeCount(postId);
+    }
+
+    @Override
+    @Transactional
+    public void unlikePost(Long postId, Long userId) {
+        if (!communityPostLikeRepository.existsByPostIdAndUserId(postId, userId)) {
+            throw new IllegalStateException("좋아요를 누르지 않은 게시글입니다.");
+        }
+
+        communityPostLikeRepository.deleteByPostIdAndUserId(postId, userId);
+
+        // ✅ 좋아요 수 감소
+        communityPostRepository.decrementLikeCount(postId);
+    }
 
 }
