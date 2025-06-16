@@ -14,6 +14,7 @@ public class CommunityCommentResponse {
     private String content;
     private String nickname; // 닉네임 추가
     private LocalDateTime createdAt;
+    private Long parentCommentId;
 
     public static CommunityCommentResponse from(CommunityComment comment, String nickname) {
         return new CommunityCommentResponse(
@@ -21,7 +22,8 @@ public class CommunityCommentResponse {
                 comment.getUserId(),
                 comment.getContent(),
                 nickname,
-                comment.getCreatedAt()
+                comment.getCreatedAt(),
+                comment.getParentCommentId()
         );
     }
 }
