@@ -2,24 +2,22 @@ package com.deungsanlog.mountain.controller;
 
 import com.deungsanlog.mountain.dto.MountainDetailDto;
 import com.deungsanlog.mountain.dto.MountainRecordSearchResponse;
+import com.deungsanlog.mountain.entity.Mountain;
 import com.deungsanlog.mountain.service.MountainService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
-//http 요청 처리,autowired 쓰기위해 빈으로 등록
 @RestController
 @RequestMapping("/api/mountains")
 public class MountainController {
 
-    //자동연결(객체를 찾을려고 spring에서 컨테이너 뒤져봄)
     @Autowired
-    private MountainService mountainService; // Repository 대신 Service 주입
+    private MountainService mountainService;
+
+    // ========== 기존 API들 ==========
 
     @GetMapping("/status")
     public Map<String, String> status() {
@@ -28,7 +26,7 @@ public class MountainController {
 
     @GetMapping("/search")
     public MountainDetailDto searchMountain(@RequestParam String name) {
-        return mountainService.searchMountain(name); // Service 호출
+        return mountainService.searchMountain(name);
     }
 
     @GetMapping("/record/search")
@@ -40,5 +38,25 @@ public class MountainController {
     public Map<String, String> getMountainNameById(@RequestParam Long mountainId) {
         String name = mountainService.getMountainBasic(mountainId).getName();
         return Map.of("name", name);
+    }
+
+    // ========== 🗺️ 지도용 새로운 API들 ==========
+
+    /**
+     * 카카오 지도에 마커 표시용 - 전체 산 목록 조회
+     * 용도: 지도 로드 시 모든 산의 마커를 생성하기 위해
+     */
+    @GetMapping("/all")
+    public List<Mountain> getAllMountainsForMap() {
+        return mountainService.getAllMountainsForMap();
+    }
+
+    /**
+     * 지도 마커 클릭 시 - 특정 산 정보 조회
+     * 용도: 마커 클릭 시 팝업에 표시할 산 정보
+     */
+    @GetMapping("/{mountainId}")
+    public Mountain getMountainById(@PathVariable Long mountainId) {
+        return mountainService.getMountainBasic(mountainId);
     }
 }

@@ -1,10 +1,10 @@
 package com.deungsanlog.user.service;
 
-
-import com.deungsanlog.user.entity.User;
-import com.deungsanlog.user.repository.UserRepository;
 import com.deungsanlog.user.dto.UserCreateRequest;
 import com.deungsanlog.user.dto.UserResponse;
+import com.deungsanlog.user.dto.UserUpdateRequest;
+import com.deungsanlog.user.entity.User;
+import com.deungsanlog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -66,6 +66,38 @@ public class UserService {
     }
 
     /**
+     * 🆕 프로필 수정 메서드 (새로 추가!)
+     */
+    public UserResponse updateUser(Long userId, UserUpdateRequest request) {
+        log.info("프로필 수정 시작: userId={}, nickname={}, profileImgUrl={}",
+                userId, request.getNickname(), request.getProfileImgUrl());
+
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + userId));
+
+        // 닉네임 수정
+        if (request.getNickname() != null && !request.getNickname().trim().isEmpty()) {
+            String oldNickname = user.getNickname();
+            user.setNickname(request.getNickname().trim());
+            log.info("닉네임 변경: {} → {}", oldNickname, user.getNickname());
+        }
+
+        // 프로필 이미지 URL 수정
+        if (request.getProfileImgUrl() != null) {
+            String oldProfileImg = user.getProfileImgUrl();
+            user.setProfileImgUrl(request.getProfileImgUrl());
+            log.info("프로필 이미지 변경: {} → {}", oldProfileImg, user.getProfileImgUrl());
+        }
+
+        // 저장 (updatedAt 자동 업데이트)
+        User updatedUser = userRepository.save(user);
+        log.info("프로필 수정 완료: userId={}", updatedUser.getId());
+
+        return convertToUserResponse(updatedUser);
+    }
+
+    /**
      * 이메일로 조회
      */
     @Transactional(readOnly = true)
@@ -79,7 +111,7 @@ public class UserService {
     }
 
     /**
-     * 기존 사용자 정보 업데이트
+     * 기존 사용자 정보 업데이트 (OAuth 전용)
      */
     private void updateUserInfo(User user, UserCreateRequest request) {
         // 이메일이 변경되었을 수 있음
@@ -103,7 +135,7 @@ public class UserService {
     }
 
     /**
-     * 새 사용자 생성
+     * 새 사용자 생성 (OAuth 전용)
      */
     private User createNewUser(UserCreateRequest request) {
         return User.builder()

@@ -15,6 +15,7 @@ import org.springframework.web.util.HtmlUtils;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MountainService {
@@ -261,5 +262,17 @@ public class MountainService {
         return mountainRepository.findByNameOrLocationContaining(keyword).stream()
                 .map(m -> new MountainRecordSearchResponse(m.getId(), m.getName(), m.getLocation()))
                 .toList();
+    }
+
+    // ========== 🗺️ 지도용 메서드 ==========
+
+    /**
+     * 카카오 지도에 마커 표시용 - 전체 산 목록 조회
+     * 위도/경도가 있는 산들만 반환 (지도에 표시할 수 있는 것들)
+     */
+    public List<Mountain> getAllMountainsForMap() {
+        return mountainRepository.findAll().stream()
+                .filter(mountain -> mountain.getLatitude() != null && mountain.getLongitude() != null)
+                .collect(Collectors.toList());
     }
 }
