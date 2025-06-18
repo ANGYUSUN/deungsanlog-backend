@@ -49,10 +49,12 @@ public interface RecordHikingRepository extends JpaRepository<RecordHiking, Long
                        DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) as `rank`
                 FROM record_hikings
                 WHERE record_date >= :startDate
+                  AND mountain_id IS NOT NULL
                 GROUP BY mountain_id, mountain_name
             ) r
             WHERE r.rank <= :maxRank
             ORDER BY r.rank ASC
             """, nativeQuery = true)
     List<Object[]> findRankedHotMountains(@Param("startDate") LocalDate startDate, @Param("maxRank") int maxRank);
+
 }
