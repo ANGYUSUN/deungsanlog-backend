@@ -31,18 +31,29 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserServiceClient userServiceClient;
     private final WebClient webClient = WebClient.builder().build();
+
+    // Redirect URI 설정
     private final String googleRedirectUri = "http://localhost:8080/auth/google/callback";
     private final String naverRedirectUri = "http://localhost:8080/auth/naver/callback";
+    private final String kakaoRedirectUri = "http://localhost:8080/auth/kakao/callback"; //  카카오 추가
+
     // Google 설정
     @Value("${google.oauth.client-id}")
     private String googleClientId;
     @Value("${google.oauth.client-secret}")
     private String googleClientSecret;
+
     // 네이버 설정
     @Value("${naver.oauth.client-id}")
     private String naverClientId;
     @Value("${naver.oauth.client-secret}")
     private String naverClientSecret;
+
+    //  카카오 설정 추가
+    @Value("${kakao.oauth.client-id}")
+    private String kakaoClientId;
+    @Value("${kakao.oauth.client-secret}")
+    private String kakaoClientSecret;
 
     /**
      * Google OAuth2 로그인 시작점 - 바로 Google로 리다이렉트
@@ -78,13 +89,35 @@ public class AuthController {
                 + "&redirect_uri=" + naverRedirectUri
                 + "&scope=name%20email"  // 공백을 %20으로 인코딩
                 + "&response_type=code"
-                + "&state=RANDOM_STATE_STRING"; // 보안을 위한 state 파라미터
+                + "&state=RANDOM_STATE_STRING" // 보안을 위한 state 파라미터
+                + "&auth_type=reprompt";
 
         log.info("네이버 인증 URL로 리다이렉트: {}", naverAuthUrl);
 
         // 바로 네이버 로그인 페이지로 리다이렉트
         return Mono.just(ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(naverAuthUrl))
+                .build());
+    }
+
+    /**
+     * 카카오 OAuth2 로그인 시작점 - 바로 카카오로 리다이렉트
+     */
+    @GetMapping("/kakao")
+    public Mono<ResponseEntity<Void>> kakaoLogin() {
+        log.info("카카오 OAuth2 로그인 시작 - 바로 리다이렉트");
+
+        String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize"
+                + "?client_id=" + kakaoClientId
+                + "&redirect_uri=" + URLEncoder.encode(kakaoRedirectUri, StandardCharsets.UTF_8)
+                + "&response_type=code"
+                + "&prompt=login";
+
+        log.info("카카오 인증 URL로 리다이렉트: {}", kakaoAuthUrl);
+
+        // 바로 카카오 로그인 페이지로 리다이렉트
+        return Mono.just(ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(kakaoAuthUrl))
                 .build());
     }
 
@@ -175,6 +208,54 @@ public class AuthController {
                 })
                 .onErrorResume(error -> {
                     log.error("네이버 OAuth2 로그인 실패", error);
+                    String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                            URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
+
+                    ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
+                            .location(URI.create(errorRedirectUrl))
+                            .build();
+
+                    return Mono.just(errorResponse);
+                });
+    }
+
+    /**
+     * 🔥 카카오 OAuth2 콜백 처리 - 프론트엔드로 리다이렉트
+     */
+    @GetMapping("/kakao/callback")
+    public Mono<ResponseEntity<Void>> kakaoCallback(@RequestParam String code) {
+        log.info("카카오 OAuth2 콜백 처리 시작: code={}", code);
+
+        return exchangeKakaoCodeForToken(code)
+                .flatMap(this::getKakaoUserInfo)
+                .flatMap(this::saveKakaoUserToUserService)
+                .map(userResponse -> {
+                    try {
+                        // JWT 토큰 생성
+                        String jwtToken = jwtTokenProvider.generateToken(
+                                userResponse.getEmail(),
+                                List.of("ROLE_USER"),
+                                userResponse.getId()
+                        );
+
+                        // 프론트엔드로 토큰과 함께 리다이렉트
+                        String redirectUrl = "http://localhost:5173/login?token=" + jwtToken;
+
+                        return ResponseEntity.status(HttpStatus.FOUND)
+                                .location(URI.create(redirectUrl))
+                                .<Void>build();
+                    } catch (Exception e) {
+                        log.error("JWT 토큰 생성 실패", e);
+                        String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                                URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
+
+                        return ResponseEntity.status(HttpStatus.FOUND)
+                                .location(URI.create(errorRedirectUrl))
+                                .<Void>build();
+                    }
+                })
+                .onErrorResume(error -> {
+                    log.error("카카오 OAuth2 로그인 실패", error);
                     String errorRedirectUrl = "http://localhost:5173/login?error=" +
                             URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
 
@@ -283,6 +364,68 @@ public class AuthController {
                 .profileImgUrl(response.getProfileImage())
                 .provider("naver")
                 .providerId(response.getId())
+                .build();
+
+        return userServiceClient.saveOrUpdateUser(request);
+    }
+
+    // 카카오 관련 메서드들 추가
+    private Mono<String> exchangeKakaoCodeForToken(String code) {
+        log.info("카카오 Access Token 요청 시작 (Client Secret 포함)");
+
+        String tokenUrl = "https://kauth.kakao.com/oauth/token";
+
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("grant_type", "authorization_code");
+        formData.add("client_id", kakaoClientId);
+        formData.add("client_secret", kakaoClientSecret);  //  보안 강화
+        formData.add("redirect_uri", kakaoRedirectUri);
+        formData.add("code", code);
+
+        return webClient.post()
+                .uri(tokenUrl)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData(formData))
+                .retrieve()
+                .bodyToMono(KakaoTokenResponse.class)
+                .map(KakaoTokenResponse::getAccessToken)
+                .doOnSuccess(token -> log.info("카카오 Access Token 획득 성공 (보안 강화됨)"))
+                .doOnError(error -> log.error("카카오 토큰 요청 실패: {}", error.getMessage()));
+    }
+
+    private Mono<KakaoUserInfo> getKakaoUserInfo(String accessToken) {
+        log.info("카카오 사용자 정보 요청 시작");
+
+        String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
+
+        return webClient.get()
+                .uri(userInfoUrl)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(KakaoUserInfo.class)
+                .doOnSuccess(userInfo -> log.info("카카오 사용자 정보 획득 성공: email={}", userInfo.getEmail()));
+    }
+
+    private Mono<UserResponse> saveKakaoUserToUserService(KakaoUserInfo kakaoUser) {
+        log.info("User Service에 카카오 사용자 정보 저장 시작: kakaoId={}", kakaoUser.getId());
+
+        //  카카오는 이메일이 없으므로 가상 이메일 생성
+        String virtualEmail = "kakao_" + kakaoUser.getId() + "@kakao.local";
+
+        //  닉네임이 없는 경우 기본값 설정
+        String nickname = kakaoUser.getNickname();
+        if (nickname == null || nickname.trim().isEmpty()) {
+            nickname = "카카오사용자_" + kakaoUser.getId();
+        }
+
+        log.info("카카오 사용자 정보 - 가상이메일: {}, 닉네임: {}", virtualEmail, nickname);
+
+        UserCreateRequest request = UserCreateRequest.builder()
+                .email(virtualEmail)  //  kakao_123456789@kakao.local
+                .nickname(nickname)   //  실제 닉네임 또는 기본값
+                .profileImgUrl(kakaoUser.getProfileImageUrl())
+                .provider("kakao")
+                .providerId(kakaoUser.getId().toString())
                 .build();
 
         return userServiceClient.saveOrUpdateUser(request);
