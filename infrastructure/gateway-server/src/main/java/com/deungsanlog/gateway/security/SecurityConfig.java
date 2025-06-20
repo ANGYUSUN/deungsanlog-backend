@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -30,6 +31,8 @@ public class SecurityConfig {
         jwtWebFilter.setServerAuthenticationConverter(jwtAuthenticationConverter());
 
         return http
+                .cors(corsSpec -> {
+                })
                 // 인증 정보를 세션 등에 저장하지 않고, 매 요청마다 인증을 수행
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 // CSRF는 웹 브라우저 기반의 요청 위조 공격을 방지하기 위한 보안 메커니즘
@@ -42,6 +45,7 @@ public class SecurityConfig {
 
                 // 경로별 인증 설정
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // 인증이 필요하지 않은 경로들 (GlobalGatewayFilter와 일치)
                         .pathMatchers("/auth/**").permitAll()                    // OAuth2 인증 관련
                         .pathMatchers("/actuator/**").permitAll()                // 헬스체크

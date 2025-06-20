@@ -35,3 +35,9 @@ spring:
 publicdata:
   api:
     key: ${publicdata.api.key}
+
+logging:
+  file:
+    name: logs/mountain-service.log
+  level:
+    root: INFO
