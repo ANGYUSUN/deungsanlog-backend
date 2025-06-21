@@ -59,4 +59,6 @@ public class MountainController {
     public Mountain getMountainById(@PathVariable Long mountainId) {
         return mountainService.getMountainBasic(mountainId);
     }
+
+   
 }

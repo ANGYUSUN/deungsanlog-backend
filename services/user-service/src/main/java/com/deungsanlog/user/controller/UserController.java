@@ -125,7 +125,7 @@ public class UserController {
 
             // 🔧 파일 저장 경로 수정 (실제 폴더 구조에 맞춤)
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            String uploadDir = System.getProperty("user.dir") + "/uploads/profiles"; // ✅ 경로 수정!
+            String uploadDir = System.getProperty("user.dir") + "/services/user-service/uploads/profiles";// ✅ 경로 수정!
             Path uploadPath = Paths.get(uploadDir);
 
             // 디렉토리 생성
