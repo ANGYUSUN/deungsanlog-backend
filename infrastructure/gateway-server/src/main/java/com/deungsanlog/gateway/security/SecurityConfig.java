@@ -31,8 +31,6 @@ public class SecurityConfig {
         jwtWebFilter.setServerAuthenticationConverter(jwtAuthenticationConverter());
 
         return http
-                .cors(corsSpec -> {
-                })
                 // 인증 정보를 세션 등에 저장하지 않고, 매 요청마다 인증을 수행
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 // CSRF는 웹 브라우저 기반의 요청 위조 공격을 방지하기 위한 보안 메커니즘
