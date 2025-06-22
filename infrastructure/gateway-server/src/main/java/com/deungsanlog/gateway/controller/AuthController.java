@@ -31,8 +31,12 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserServiceClient userServiceClient;
     private final WebClient webClient = WebClient.builder().build();
-    private final String googleRedirectUri = "http://localhost:8080/auth/google/callback";
-    private final String naverRedirectUri = "http://localhost:8080/auth/naver/callback";
+    @Value("${google.oauth.redirect-uri}")
+    private String googleRedirectUri;
+    @Value("${naver.oauth.redirect-uri}")
+    private String naverRedirectUri;
+    @Value("${frontend.redirect-uri}")
+    private String frontendRedirectUri;
     // Google 설정
     @Value("${google.oauth.client-id}")
     private String googleClientId;
@@ -51,7 +55,7 @@ public class AuthController {
     public Mono<ResponseEntity<Void>> googleLogin() {
         log.info("Google OAuth2 로그인 시작 - 바로 리다이렉트");
 
-        String googleAuthUrl = "https://accounts.google.com/o/oauth2/auth"
+        String googleAuthUrl = googleRedirectUri
                 + "?client_id=" + googleClientId
                 + "&redirect_uri=" + googleRedirectUri
                 + "&scope=email%20profile"  // 공백을 %20으로 인코딩
@@ -73,7 +77,7 @@ public class AuthController {
     public Mono<ResponseEntity<Void>> naverLogin() {
         log.info("네이버 OAuth2 로그인 시작 - 바로 리다이렉트");
 
-        String naverAuthUrl = "https://nid.naver.com/oauth2.0/authorize"
+        String naverAuthUrl = naverRedirectUri
                 + "?client_id=" + naverClientId
                 + "&redirect_uri=" + naverRedirectUri
                 + "&scope=name%20email"  // 공백을 %20으로 인코딩
@@ -108,14 +112,14 @@ public class AuthController {
                         );
 
                         // 프론트엔드로 토큰과 함께 리다이렉트
-                        String redirectUrl = "http://localhost:5173/login?token=" + jwtToken;
+                        String redirectUrl = frontendRedirectUri + "?token=" + jwtToken;
 
                         return ResponseEntity.status(HttpStatus.FOUND)
                                 .location(URI.create(redirectUrl))
                                 .<Void>build();
                     } catch (Exception e) {
                         log.error("JWT 토큰 생성 실패", e);
-                        String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                        String errorRedirectUrl = frontendRedirectUri + "?error=" +
                                 URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
 
                         return ResponseEntity.status(HttpStatus.FOUND)
@@ -125,7 +129,7 @@ public class AuthController {
                 })
                 .onErrorResume(error -> {
                     log.error("Google OAuth2 로그인 실패", error);
-                    String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                    String errorRedirectUrl = frontendRedirectUri + "?error=" +
                             URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
 
                     ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
@@ -158,14 +162,14 @@ public class AuthController {
                         );
 
                         // 프론트엔드로 토큰과 함께 리다이렉트
-                        String redirectUrl = "http://localhost:5173/login?token=" + jwtToken;
+                        String redirectUrl = frontendRedirectUri + "?token=" + jwtToken;
 
                         return ResponseEntity.status(HttpStatus.FOUND)
                                 .location(URI.create(redirectUrl))
                                 .<Void>build();
                     } catch (Exception e) {
                         log.error("JWT 토큰 생성 실패", e);
-                        String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                        String errorRedirectUrl = frontendRedirectUri + "?error=" +
                                 URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
 
                         return ResponseEntity.status(HttpStatus.FOUND)
@@ -175,7 +179,7 @@ public class AuthController {
                 })
                 .onErrorResume(error -> {
                     log.error("네이버 OAuth2 로그인 실패", error);
-                    String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                    String errorRedirectUrl = frontendRedirectUri + "?error=" +
                             URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
 
                     ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
