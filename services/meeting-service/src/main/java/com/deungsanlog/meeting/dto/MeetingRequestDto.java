@@ -10,7 +10,8 @@ import java.time.LocalTime;
 @Setter
 public class MeetingRequestDto {
     private Long hostUserId;
-    private Long mountainId;
+    private Long mountainId; // null 허용
+    private String mountainName;
     private String title;
     private String description;
     private String location;

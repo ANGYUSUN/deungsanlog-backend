@@ -24,7 +24,10 @@ public class Meeting {
 
     private Long hostUserId;
 
-    private Long mountainId;
+    private Long mountainId; // null 허용
+
+    @Column(nullable = false)
+    private String mountainName;
 
     private String title;
 

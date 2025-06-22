@@ -25,6 +25,7 @@ public class MeetingService {
         Meeting meeting = Meeting.builder()
                 .hostUserId(dto.getHostUserId())
                 .mountainId(dto.getMountainId())
+                .mountainName(dto.getMountainName())
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .location(dto.getLocation())
