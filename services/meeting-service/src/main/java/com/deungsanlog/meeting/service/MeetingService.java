@@ -7,7 +7,12 @@ import com.deungsanlog.meeting.entity.MeetingStatus;
 import com.deungsanlog.meeting.repository.MeetingMemberRepository;
 import com.deungsanlog.meeting.repository.MeetingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,5 +48,15 @@ public class MeetingService {
         meetingMemberRepository.save(host);
 
         return saved;
+    }
+
+    public Page<Meeting> getAllMeetings(int page) {
+        return meetingRepository.findAll(
+                PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt"))
+        );
+    }
+
+    public List<MeetingMember> getMeetingMembers(Long meetingId) {
+        return meetingMemberRepository.findByMeetingId(meetingId);
     }
 }

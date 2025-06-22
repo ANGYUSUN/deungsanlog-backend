@@ -15,11 +15,24 @@ public class MeetingController {
 
     @GetMapping("/status")
     public ResponseEntity<?> status() {
-        return ResponseEntity.ok().body("meeting-service is up!");
+        return ResponseEntity.ok("meeting-service is up!");
     }
 
     @PostMapping("/post")
     public ResponseEntity<?> createMeeting(@RequestBody MeetingRequestDto dto) {
         return ResponseEntity.ok(meetingService.saveMeeting(dto));
+    }
+
+    // 전체 모임 목록 조회
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllMeetings(@RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(meetingService.getAllMeetings(page));
+    }
+
+
+    // 특정 모임의 멤버 목록 조회
+    @GetMapping("/{meetingId}/members")
+    public ResponseEntity<?> getMeetingMembers(@PathVariable Long meetingId) {
+        return ResponseEntity.ok(meetingService.getMeetingMembers(meetingId));
     }
 }
