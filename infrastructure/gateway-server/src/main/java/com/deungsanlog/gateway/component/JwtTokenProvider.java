@@ -1,6 +1,7 @@
 package com.deungsanlog.gateway.component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +22,17 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration:86400000}") // 24시간 기본값
     private long tokenValidityInMilliseconds;
 
-    // 멘토님 원본 메서드들
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
                     .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
                     .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {           // 만료 예외 별도 처리
+            log.warn("만료된 JWT 토큰: {}", e.getMessage());
+            return false;
+        } catch (Exception e) {                     //  기타 예외 처리
+            log.error("JWT 토큰 검증 실패: {}", e.getMessage());
             return false;
         }
     }
