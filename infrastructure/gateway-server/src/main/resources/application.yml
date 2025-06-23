@@ -3,6 +3,9 @@ spring:
     active: prod  # 개발 시에는 dev, 배포 시에는 prod 로 바꿈
     include: keys
 
+  config:
+    import: "optional:application-keys.yml"
+
 logging:
   file:
     name: logs/gateway-service.log
