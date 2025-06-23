@@ -5,7 +5,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - http://14.63.178.148:8080
+              - https://deungsanlog.site
             allowedMethods:
               - GET
               - POST
@@ -25,7 +25,7 @@ spring:
             scope:
               - email
               - profile
-            redirect-uri: http://14.63.178.148/auth/google/callback
+            redirect-uri: https://deungsanlog.site/auth/google/callback
           naver:
             client-id: ${naver.oauth.client-id}
             client-secret: ${naver.oauth.client-secret}
@@ -34,7 +34,7 @@ spring:
             scope:
               - name
               - email
-            redirect-uri: http://14.63.178.148/auth/naver/callback
+            redirect-uri: https://deungsanlog.site/auth/naver/callback
 
         provider:
           naver:
@@ -43,4 +43,4 @@ spring:
             user-info-uri: https://openapi.naver.com/v1/nid/me
             user-name-attribute: response
 frontend:
-  redirect-uri: http://14.63.178.148/login
+  redirect-uri: https://deungsanlog.site/login
