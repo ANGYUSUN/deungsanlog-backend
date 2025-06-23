@@ -29,6 +29,15 @@ public class MeetingController {
         return ResponseEntity.ok(meetingService.getAllMeetings(page));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> searchMeetings(
+            @RequestParam(defaultValue = "all") String status,
+            @RequestParam(defaultValue = "deadline") String sort,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return ResponseEntity.ok(meetingService.searchMeetings(status, sort, keyword, page));
+    }
 
     // 특정 모임의 멤버 목록 조회
     @GetMapping("/{meetingId}/members")
