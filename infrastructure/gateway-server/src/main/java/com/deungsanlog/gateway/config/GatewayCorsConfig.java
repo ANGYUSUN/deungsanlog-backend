@@ -14,6 +14,7 @@ public class GatewayCorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://14.63.178.148");
+        config.addAllowedOrigin("https://deungsanlog.site");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
