@@ -12,6 +12,8 @@ import com.deungsanlog.community.repository.CommunityPostLikeRepository;
 import com.deungsanlog.community.repository.CommunityPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +30,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     private final CommunityPostImageRepository imageRepository;
     private final CommunityPostRepository communityPostRepository;
     private final UserClient userClient;
-    private final CommunityPostLikeRepository likeRepository;
     private final CommunityPostLikeRepository communityPostLikeRepository;
 
     @Override
@@ -197,7 +198,10 @@ public class CommunityPostServiceImpl implements CommunityPostService {
             String filePath = "C:/sw-project/deungsanlog-backend/services/community-service/uploads/" + image.getFileName();
             File file = new File(filePath);
             if (file.exists()) {
-                file.delete();
+                boolean deleted = file.delete();
+                if (!deleted) {
+                    System.err.println("이미지 파일 삭제 실패: " + filePath);
+                }
             }
         }
         imageRepository.deleteAll(images);
@@ -232,6 +236,58 @@ public class CommunityPostServiceImpl implements CommunityPostService {
 
         // ✅ 좋아요 수 감소
         communityPostRepository.decrementLikeCount(postId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommunityPostResponse> searchPosts(String sort, String field, String keyword, int page, int size) {
+        // 정렬 기준 변환
+        Sort sorting;
+        if ("popular".equalsIgnoreCase(sort)) {
+            sorting = Sort.by(Sort.Direction.DESC, "likeCount");
+        } else if ("oldest".equalsIgnoreCase(sort)) {
+            sorting = Sort.by(Sort.Direction.ASC, "createdAt");
+        } else {
+            sorting = Sort.by(Sort.Direction.DESC, "createdAt");
+        }
+        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), sorting);
+
+        List<CommunityPost> posts;
+
+        if (keyword == null || keyword.trim().isEmpty() || "all".equalsIgnoreCase(field)) {
+            posts = communityPostRepository.findAll(pageable).getContent();
+        } else if ("title".equalsIgnoreCase(field)) {
+            posts = communityPostRepository.findByTitleContainingIgnoreCase(keyword, pageable).getContent();
+        } else if ("content".equalsIgnoreCase(field)) {
+            posts = communityPostRepository.findByContentContainingIgnoreCase(keyword, pageable).getContent();
+        } else {
+            posts = communityPostRepository.findAll(pageable).getContent();
+        }
+
+        return posts.stream()
+                .map(post -> {
+                    String nickname = userClient.getNickname(post.getUserId());
+                    List<String> imageUrls = imageRepository.findAllByPostId(post.getId())
+                            .stream()
+                            .map(CommunityPostImage::getImageUrl)
+                            .collect(Collectors.toList());
+
+                    return CommunityPostResponse.builder()
+                            .id(post.getId())
+                            .userId(post.getUserId())
+                            .nickname(nickname)
+                            .mountainId(post.getMountainId())
+                            .title(post.getTitle())
+                            .content(post.getContent())
+                            .hasImage(post.isHasImage())
+                            .likeCount(post.getLikeCount())
+                            .commentCount(post.getCommentCount())
+                            .createdAt(post.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .updatedAt(post.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .imageUrls(imageUrls)
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
 }

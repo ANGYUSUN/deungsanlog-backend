@@ -22,4 +22,6 @@ public interface CommunityPostService {
     void likePost(Long postId, Long userId);
 
     void unlikePost(Long postId, Long userId);
+
+    List<CommunityPostResponse> searchPosts(String sort, String field, String keyword, int page, int size);
 }
