@@ -1,6 +1,8 @@
 package com.deungsanlog.record.repository;
 
 import com.deungsanlog.record.domain.RecordHiking;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +13,7 @@ import java.util.List;
 public interface RecordHikingRepository extends JpaRepository<RecordHiking, Long> {
     int countByUserId(Long userId);
 
-    List<RecordHiking> findByUserId(Long userId);
+    Page<RecordHiking> findByUserId(Long userId, Pageable pageable);
 
     @Query(value = """
             SELECT user_id, COUNT(*) as cnt
@@ -56,5 +58,4 @@ public interface RecordHikingRepository extends JpaRepository<RecordHiking, Long
             ORDER BY r.rank ASC
             """, nativeQuery = true)
     List<Object[]> findRankedHotMountains(@Param("startDate") LocalDate startDate, @Param("maxRank") int maxRank);
-
 }

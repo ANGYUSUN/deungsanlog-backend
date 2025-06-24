@@ -4,6 +4,8 @@ import com.deungsanlog.record.domain.RecordHiking;
 import com.deungsanlog.record.dto.RecordHikingResponse;
 import com.deungsanlog.record.repository.RecordHikingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -59,26 +60,15 @@ public class RecordHikingService {
         recordHikingRepository.save(record);
     }
 
-    public List<RecordHikingResponse> getRecordsByUser(Long userId) {
-        return recordHikingRepository.findByUserId(userId).stream()
-                .map(record -> RecordHikingResponse.builder()
-                        .id(record.getId())
-                        .userId(record.getUserId())
-                        .mountainId(record.getMountainId())
-                        .mountainName(record.getMountainName())
-                        .photoUrl(record.getPhotoUrl())
-                        .content(record.getContent())
-                        .recordDate(record.getRecordDate())
-                        .createdAt(record.getCreatedAt())
-                        .updatedAt(record.getUpdatedAt())
-                        .build())
-                .toList();
-    }
-
     public RecordHikingResponse getRecordById(Long recordId) {
         RecordHiking record = recordHikingRepository.findById(recordId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 기록이 없습니다."));
         return RecordHikingResponse.from(record);
+    }
+
+    public Page<RecordHikingResponse> getRecordsByUser(Long userId, Pageable pageable) {
+        return recordHikingRepository.findByUserId(userId, pageable)
+                .map(RecordHikingResponse::from);
     }
 
     public void edit(Long recordId, String mountainName, LocalDate recordDate, String content, MultipartFile photo) {

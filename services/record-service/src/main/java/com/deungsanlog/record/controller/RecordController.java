@@ -7,6 +7,10 @@ import com.deungsanlog.record.service.HotMountainService;
 import com.deungsanlog.record.service.RankingService;
 import com.deungsanlog.record.service.RecordHikingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +35,15 @@ public class RecordController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<RecordHikingResponse>> getRecordsByUser(
-            @RequestParam("userId") Long userId
+    public ResponseEntity<Page<RecordHikingResponse>> getRecordsByUser(
+            @RequestParam("userId") Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
     ) {
-        return ResponseEntity.ok(recordHikingService.getRecordsByUser(userId));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("recordDate").descending());
+        return ResponseEntity.ok(recordHikingService.getRecordsByUser(userId, pageable));
     }
+
 
     @PostMapping("/post")
     public ResponseEntity<String> createRecord(
