@@ -33,9 +33,9 @@ public class AuthController {
     private final WebClient webClient = WebClient.builder().build();
 
     // Redirect URI 설정
-    private final String googleRedirectUri = "http://localhost:8080/auth/google/callback";
-    private final String naverRedirectUri = "http://localhost:8080/auth/naver/callback";
-    private final String kakaoRedirectUri = "http://localhost:8080/auth/kakao/callback"; //  카카오 추가
+    private final String googleRedirectUri = "https://deungsanlog.site/auth/google/callback";
+    private final String naverRedirectUri = "https://deungsanlog.site/auth/naver/callback";
+    private final String kakaoRedirectUri = "https://deungsanlog.site/auth/kakao/callback"; //  카카오 추가
 
     // Google 설정
     @Value("${google.oauth.client-id}")
@@ -141,14 +141,14 @@ public class AuthController {
                         );
 
                         // 프론트엔드로 토큰과 함께 리다이렉트
-                        String redirectUrl = "http://localhost:5173/login?token=" + jwtToken;
+                        String redirectUrl = "https://deungsanlog.site/login?token=" + jwtToken;
 
                         return ResponseEntity.status(HttpStatus.FOUND)
                                 .location(URI.create(redirectUrl))
                                 .<Void>build();
                     } catch (Exception e) {
                         log.error("JWT 토큰 생성 실패", e);
-                        String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                        String errorRedirectUrl = "https://deungsanlog.site/login/login?error=" +
                                 URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
 
                         return ResponseEntity.status(HttpStatus.FOUND)
@@ -158,7 +158,7 @@ public class AuthController {
                 })
                 .onErrorResume(error -> {
                     log.error("Google OAuth2 로그인 실패", error);
-                    String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                    String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
                             URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
 
                     ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
@@ -191,14 +191,14 @@ public class AuthController {
                         );
 
                         // 프론트엔드로 토큰과 함께 리다이렉트
-                        String redirectUrl = "http://localhost:5173/login?token=" + jwtToken;
+                        String redirectUrl = "https://deungsanlog.site/login?token=" + jwtToken;
 
                         return ResponseEntity.status(HttpStatus.FOUND)
                                 .location(URI.create(redirectUrl))
                                 .<Void>build();
                     } catch (Exception e) {
                         log.error("JWT 토큰 생성 실패", e);
-                        String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                        String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
                                 URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
 
                         return ResponseEntity.status(HttpStatus.FOUND)
@@ -208,7 +208,7 @@ public class AuthController {
                 })
                 .onErrorResume(error -> {
                     log.error("네이버 OAuth2 로그인 실패", error);
-                    String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                    String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
                             URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
 
                     ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
@@ -239,14 +239,14 @@ public class AuthController {
                         );
 
                         // 프론트엔드로 토큰과 함께 리다이렉트
-                        String redirectUrl = "http://localhost:5173/login?token=" + jwtToken;
+                        String redirectUrl = "https://deungsanlog.site/login?token=" + jwtToken;
 
                         return ResponseEntity.status(HttpStatus.FOUND)
                                 .location(URI.create(redirectUrl))
                                 .<Void>build();
                     } catch (Exception e) {
                         log.error("JWT 토큰 생성 실패", e);
-                        String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                        String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
                                 URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
 
                         return ResponseEntity.status(HttpStatus.FOUND)
@@ -256,7 +256,7 @@ public class AuthController {
                 })
                 .onErrorResume(error -> {
                     log.error("카카오 OAuth2 로그인 실패", error);
-                    String errorRedirectUrl = "http://localhost:5173/login?error=" +
+                    String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
                             URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
 
                     ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
