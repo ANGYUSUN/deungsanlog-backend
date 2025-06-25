@@ -290,4 +290,36 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommunityPostResponse> getPostsByUser(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<CommunityPost> posts = communityPostRepository.findByUserId(userId, pageable).getContent();
+
+        return posts.stream()
+                .map(post -> {
+                    String nickname = userClient.getNickname(post.getUserId());
+                    List<String> imageUrls = imageRepository.findAllByPostId(post.getId())
+                            .stream()
+                            .map(CommunityPostImage::getImageUrl)
+                            .collect(Collectors.toList());
+
+                    return CommunityPostResponse.builder()
+                            .id(post.getId())
+                            .userId(post.getUserId())
+                            .nickname(nickname)
+                            .mountainId(post.getMountainId())
+                            .title(post.getTitle())
+                            .content(post.getContent())
+                            .hasImage(post.isHasImage())
+                            .likeCount(post.getLikeCount())
+                            .commentCount(post.getCommentCount())
+                            .createdAt(post.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .updatedAt(post.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .imageUrls(imageUrls)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
 }

@@ -132,4 +132,15 @@ public class CommunityController {
         List<CommunityPostResponse> posts = communityPostService.searchPosts(sort, field, keyword, page, size);
         return ResponseEntity.ok(posts);
     }
+
+    // 특정 사용자가 작성한 게시글 목록 조회
+    @GetMapping("/posts/user/{userId}")
+    public ResponseEntity<List<CommunityPostResponse>> getPostsByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        List<CommunityPostResponse> posts = communityPostService.getPostsByUser(userId, page, size);
+        return ResponseEntity.ok(posts);
+    }
 }
