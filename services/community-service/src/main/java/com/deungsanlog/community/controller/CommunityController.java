@@ -135,12 +135,12 @@ public class CommunityController {
 
     // 특정 사용자가 작성한 게시글 목록 조회
     @GetMapping("/posts/user/{userId}")
-    public ResponseEntity<List<CommunityPostResponse>> getPostsByUser(
+    public ResponseEntity<Map<String, Object>> getPostsByUser(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        List<CommunityPostResponse> posts = communityPostService.getPostsByUser(userId, page, size);
-        return ResponseEntity.ok(posts);
+        Map<String, Object> result = communityPostService.getPostsByUserWithTotalPages(userId, page, size);
+        return ResponseEntity.ok(result);
     }
 }

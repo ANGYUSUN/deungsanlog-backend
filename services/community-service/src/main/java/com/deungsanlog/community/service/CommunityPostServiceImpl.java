@@ -11,6 +11,7 @@ import com.deungsanlog.community.repository.CommunityPostImageRepository;
 import com.deungsanlog.community.repository.CommunityPostLikeRepository;
 import com.deungsanlog.community.repository.CommunityPostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -320,6 +323,43 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> getPostsByUserWithTotalPages(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<CommunityPost> postPage = communityPostRepository.findByUserId(userId, pageable);
+
+        List<CommunityPostResponse> posts = postPage.getContent().stream()
+                .map(post -> {
+                    String nickname = userClient.getNickname(post.getUserId());
+                    List<String> imageUrls = imageRepository.findAllByPostId(post.getId())
+                            .stream()
+                            .map(CommunityPostImage::getImageUrl)
+                            .collect(Collectors.toList());
+
+                    return CommunityPostResponse.builder()
+                            .id(post.getId())
+                            .userId(post.getUserId())
+                            .nickname(nickname)
+                            .mountainId(post.getMountainId())
+                            .title(post.getTitle())
+                            .content(post.getContent())
+                            .hasImage(post.isHasImage())
+                            .likeCount(post.getLikeCount())
+                            .commentCount(post.getCommentCount())
+                            .createdAt(post.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .updatedAt(post.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .imageUrls(imageUrls)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalPages", postPage.getTotalPages());
+        result.put("posts", posts);
+        return result;
     }
 
 }
