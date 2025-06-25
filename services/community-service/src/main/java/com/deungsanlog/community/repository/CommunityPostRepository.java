@@ -1,6 +1,7 @@
 package com.deungsanlog.community.repository;
 
 import com.deungsanlog.community.domain.CommunityPost;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,4 +32,10 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
     void decrementCommentCount(@Param("postId") Long postId);
 
     List<CommunityPost> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    Page<CommunityPost> findAll(Pageable pageable);
+
+    Page<CommunityPost> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
+
+    Page<CommunityPost> findByContentContainingIgnoreCase(String keyword, Pageable pageable);
 }

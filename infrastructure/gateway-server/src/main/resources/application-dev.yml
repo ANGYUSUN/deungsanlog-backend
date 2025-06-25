@@ -7,6 +7,7 @@ spring:
             allowedOrigins:
               - http://localhost:5173
               - http://localhost:8080
+              - https://deungsanlog.site
             allowedMethods:
               - GET
               - POST
@@ -26,7 +27,7 @@ spring:
             scope:
               - email
               - profile
-            redirect-uri: http://localhost:8080/auth/google/callback
+            redirect-uri: https://deungsanlog.site/auth/google/callback
           naver:
             client-id: ${naver.oauth.client-id}
             client-secret: ${naver.oauth.client-secret}
@@ -35,7 +36,7 @@ spring:
             scope:
               - name
               - email
-            redirect-uri: http://localhost:8080/auth/naver/callback
+            redirect-uri: https://deungsanlog.site/auth/naver/callback
           kakao:
             client-id: ${kakao.oauth.client-id}
             client-secret: ${kakao.oauth.client-secret}
@@ -44,8 +45,7 @@ spring:
               - profile_image
               - account_email
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/auth/kakao/callback
-
+            redirect-uri: https://deungsanlog.site/auth/kakao/callback
 
         provider:
           naver:
@@ -61,4 +61,4 @@ spring:
             user-name-attribute: id
 
 frontend:
-  redirect-uri: http://localhost:5173/login
+  redirect-uri: https://deungsanlog.site/login

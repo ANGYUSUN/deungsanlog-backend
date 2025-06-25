@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -43,7 +42,6 @@ public class SecurityConfig {
 
                 // 경로별 인증 설정
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // 인증이 필요하지 않은 경로들 (GlobalGatewayFilter와 일치)
                         .pathMatchers("/auth/**").permitAll()                    // OAuth2 인증 관련
                         .pathMatchers("/actuator/**").permitAll()                // 헬스체크
@@ -51,6 +49,7 @@ public class SecurityConfig {
                         .pathMatchers("/user-service/**").permitAll()            // 유저 서비스 전체
                         .pathMatchers("/record-service/**").permitAll()          // 레코드 서비스 전체
                         .pathMatchers("/ormie-service/**").permitAll()
+                        .pathMatchers("/meeting-service/**").permitAll()
                         .pathMatchers("/community-service/**").permitAll()
                         .pathMatchers("/mountain-service/**").permitAll()        // 마운틴 서비스 전체
                         // 나머지 모든 HTTP 요청에 대해 인증된 사용자만 접근 가능하도록 설정

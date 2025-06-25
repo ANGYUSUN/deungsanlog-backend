@@ -119,4 +119,17 @@ public class CommunityController {
         boolean isLiked = communityPostLikeRepository.existsByPostIdAndUserId(postId, userId);
         return ResponseEntity.ok(isLiked);
     }
+
+    // 검색/정렬/페이징 게시글 조회
+    @GetMapping("/posts/search")
+    public ResponseEntity<List<CommunityPostResponse>> searchPosts(
+            @RequestParam(defaultValue = "latest") String sort,
+            @RequestParam(defaultValue = "all") String field,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        List<CommunityPostResponse> posts = communityPostService.searchPosts(sort, field, keyword, page, size);
+        return ResponseEntity.ok(posts);
+    }
 }
