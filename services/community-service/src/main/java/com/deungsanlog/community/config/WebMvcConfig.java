@@ -9,6 +9,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/api/communities/uploads/**")
-                .addResourceLocations("file:C:/sw-project/deungsanlog-backend/services/community-service/uploads/");
+                .addResourceLocations(
+                        "file:/home/rocky/backend-deploy/community-service/uploads/",
+                        "file:C:/sw-project/deungsanlog-backend/services/community-service/uploads/"
+                );
     }
 }
