@@ -38,4 +38,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
     Page<CommunityPost> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
 
     Page<CommunityPost> findByContentContainingIgnoreCase(String keyword, Pageable pageable);
+
+    Page<CommunityPost> findByUserId(Long userId, Pageable pageable);
 }
