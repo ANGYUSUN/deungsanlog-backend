@@ -6,6 +6,7 @@ import com.deungsanlog.community.dto.CommunityPostUpdateRequest;
 import com.deungsanlog.community.repository.CommunityPostLikeRepository;
 import com.deungsanlog.community.service.CommunityPostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,9 @@ public class CommunityController {
     private final CommunityPostService communityPostService;
     private final CommunityPostLikeRepository communityPostLikeRepository;
 
+    @Value("${community.upload-path}")
+    private String uploadDir;
+
     @GetMapping("/status")
     public Map<String, String> status() {
         return Map.of("message", "community-service is up!");
@@ -49,14 +53,13 @@ public class CommunityController {
     @PostMapping("/posts/upload-image")
     public ResponseEntity<List<String>> uploadImages(@RequestParam("images") List<MultipartFile> files) {
         List<String> fileUrls = new ArrayList<>();
-        String uploadDir = "C:/sw-project/deungsanlog-backend/services/community-service/uploads/";
 
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
                 String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                Path filePath = Paths.get(uploadDir + filename);
-
+                Path filePath = Paths.get(uploadDir, filename);
                 try {
+                    Files.createDirectories(Paths.get(uploadDir));
                     Files.copy(file.getInputStream(), filePath);
                     fileUrls.add("/community-service/uploads/" + filename);
                 } catch (IOException e) {

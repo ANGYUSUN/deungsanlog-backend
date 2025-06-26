@@ -11,6 +11,7 @@ import com.deungsanlog.community.repository.CommunityPostImageRepository;
 import com.deungsanlog.community.repository.CommunityPostLikeRepository;
 import com.deungsanlog.community.repository.CommunityPostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,10 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     private final CommunityPostRepository communityPostRepository;
     private final UserClient userClient;
     private final CommunityPostLikeRepository communityPostLikeRepository;
+
+    @Value("${community.upload-path}")
+    private String uploadDir;
+
 
     @Override
     @Transactional
@@ -198,7 +203,9 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     public void deletePost(Long postId) {
         List<CommunityPostImage> images = imageRepository.findAllByPostId(postId);
         for (CommunityPostImage image : images) {
-            String filePath = "C:/sw-project/deungsanlog-backend/services/community-service/uploads/" + image.getFileName();
+            String filename = new File(image.getImageUrl()).getName();
+            String filePath = uploadDir + "/" + filename;
+
             File file = new File(filePath);
             if (file.exists()) {
                 boolean deleted = file.delete();

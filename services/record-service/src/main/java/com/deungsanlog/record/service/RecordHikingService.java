@@ -4,6 +4,7 @@ import com.deungsanlog.record.domain.RecordHiking;
 import com.deungsanlog.record.dto.RecordHikingResponse;
 import com.deungsanlog.record.repository.RecordHikingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,9 @@ public class RecordHikingService {
 
     private final RecordHikingRepository recordHikingRepository;
 
+    @Value("${record.upload-path}")
+    private String uploadDir;
+
     public void create(Long userId, Long mountainId, String mountainName, LocalDate date, String content, MultipartFile photo) {
         System.out.println("📩 등산 기록 생성 요청 받음!");
         System.out.println("👤 userId: " + userId);
@@ -32,13 +36,12 @@ public class RecordHikingService {
         System.out.println("📷 photo.originalFilename: " + photo.getOriginalFilename());
 
         String fileName = UUID.randomUUID() + "_" + photo.getOriginalFilename();
-        String uploadDir = System.getProperty("user.dir") + "/services/record-service/uploads";
         Path filePath = Paths.get(uploadDir, fileName);
 
         System.out.println("📂 실제 파일 저장 경로: " + filePath.toAbsolutePath());
 
         try {
-            Files.createDirectories(Paths.get(uploadDir)); // 디렉토리가 없으면 생성
+            Files.createDirectories(Paths.get(uploadDir));
             Files.copy(photo.getInputStream(), filePath);
             System.out.println("✅ 파일 저장 성공: " + filePath.toAbsolutePath());
             System.out.println("✅ 파일 존재 여부: " + Files.exists(filePath));
@@ -46,8 +49,6 @@ public class RecordHikingService {
             throw new RuntimeException("사진 저장 실패", e);
         }
 
-
-        // 🗃️ DB 저장
         RecordHiking record = RecordHiking.builder()
                 .userId(userId)
                 .mountainId(mountainId)
@@ -81,7 +82,6 @@ public class RecordHikingService {
 
         if (photo != null && !photo.isEmpty()) {
             String fileName = UUID.randomUUID() + "_" + photo.getOriginalFilename();
-            String uploadDir = System.getProperty("user.dir") + "/services/record-service/uploads";
             Path filePath = Paths.get(uploadDir, fileName);
             try {
                 Files.createDirectories(Paths.get(uploadDir));
@@ -99,15 +99,14 @@ public class RecordHikingService {
         RecordHiking record = recordHikingRepository.findById(recordId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 기록이 없습니다."));
 
-        // 파일 경로 추출 및 삭제
         String photoUrl = record.getPhotoUrl();
         if (photoUrl != null && !photoUrl.isBlank()) {
-            String uploadDir = System.getProperty("user.dir") + "/services/record-service";
-            Path filePath = Paths.get(uploadDir, photoUrl);
+            // /uploads/uuid_파일명 형태이므로 마지막 파일명만 추출
+            String fileName = Paths.get(photoUrl).getFileName().toString();
+            Path filePath = Paths.get(uploadDir, fileName);
             try {
                 Files.deleteIfExists(filePath);
             } catch (IOException e) {
-                // 파일 삭제 실패 시 로그만 남기고 진행
                 System.err.println("사진 파일 삭제 실패: " + filePath);
             }
         }
