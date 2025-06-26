@@ -125,15 +125,15 @@ public class CommunityController {
 
     // 검색/정렬/페이징 게시글 조회
     @GetMapping("/posts/search")
-    public ResponseEntity<List<CommunityPostResponse>> searchPosts(
+    public ResponseEntity<Map<String, Object>> searchPosts(
             @RequestParam(defaultValue = "latest") String sort,
             @RequestParam(defaultValue = "all") String field,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        List<CommunityPostResponse> posts = communityPostService.searchPosts(sort, field, keyword, page, size);
-        return ResponseEntity.ok(posts);
+        Map<String, Object> result = communityPostService.searchPostsWithTotalPages(sort, field, keyword, page, size);
+        return ResponseEntity.ok(result);
     }
 
     // 특정 사용자가 작성한 게시글 목록 조회

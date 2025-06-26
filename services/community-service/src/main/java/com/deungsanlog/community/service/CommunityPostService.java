@@ -26,6 +26,9 @@ public interface CommunityPostService {
 
     List<CommunityPostResponse> searchPosts(String sort, String field, String keyword, int page, int size);
 
+    // totalPages 포함 검색 결과 반환
+    Map<String, Object> searchPostsWithTotalPages(String sort, String field, String keyword, int page, int size);
+
     List<CommunityPostResponse> getPostsByUser(Long userId, int page, int size);
 
     // 전체 페이지 수와 게시글 목록을 반환하는 메서드 추가
