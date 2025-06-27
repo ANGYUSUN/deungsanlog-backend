@@ -45,7 +45,7 @@ public class MeetingService {
         MeetingMember host = MeetingMember.builder()
                 .meetingId(saved.getId())
                 .userId(saved.getHostUserId())
-                .status(MeetingMember.Status.JOINED)
+                .status(MeetingMember.Status.ACCEPTED)
                 .build();
 
         meetingMemberRepository.save(host);
