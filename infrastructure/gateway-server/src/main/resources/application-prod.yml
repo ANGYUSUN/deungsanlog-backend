@@ -6,6 +6,9 @@ spring:
           '[/**]':
             allowedOrigins:
               - https://deungsanlog.site
+              - http://localhost:8080  # ⭐ 내부 프록시 통신 허용
+              - http://127.0.0.1:8080
+
             allowedMethods:
               - GET
               - POST
@@ -25,7 +28,7 @@ spring:
             scope:
               - email
               - profile
-            redirect-uri: https://deungsanlog.site/auth/google/callback
+            # redirect-uri 제거 - keys에서 가져옴
           naver:
             client-id: ${naver.oauth.client-id}
             client-secret: ${naver.oauth.client-secret}
@@ -34,7 +37,7 @@ spring:
             scope:
               - name
               - email
-            redirect-uri: https://deungsanlog.site/auth/naver/callback
+            # redirect-uri 제거 - keys에서 가져옴
           kakao:
             client-id: ${kakao.oauth.client-id}
             client-secret: ${kakao.oauth.client-secret}
@@ -43,7 +46,7 @@ spring:
               - profile_image
               - account_email
             authorization-grant-type: authorization_code
-            redirect-uri: https://deungsanlog.site/auth/kakao/callback
+            # redirect-uri 제거 - keys에서 가져옴
 
         provider:
           naver:
@@ -56,5 +59,6 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+
 frontend:
   redirect-uri: https://deungsanlog.site/login
