@@ -33,6 +33,13 @@ public class MeetingMember {
     @Column(name = "joined_at", nullable = false)
     private LocalDateTime joinedAt = LocalDateTime.now();
 
+    @PrePersist
+    public void prePersist() {
+        if (joinedAt == null) {
+            joinedAt = LocalDateTime.now();
+        }
+    }
+
     public enum Status {
         PENDING,     // 신청함 (대기 중)
         ACCEPTED,    // 수락됨 (참가자)
