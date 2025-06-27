@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev  # 개발 시에는 dev, 배포 시에는 prod 로 바꿈
+    active: prod  # 개발 시에는 dev, 배포 시에는 prod 로 바꿈
     include: keys
 
   config:
@@ -8,7 +8,7 @@ spring:
 
 logging:
   file:
-    name: logs/gateway-service.log
+    name: logs/gateway-service.log./
     path: logs
 
 logging.level:

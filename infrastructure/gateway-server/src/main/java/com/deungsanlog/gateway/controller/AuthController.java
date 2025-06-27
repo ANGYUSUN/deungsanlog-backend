@@ -32,10 +32,19 @@ public class AuthController {
     private final UserServiceClient userServiceClient;
     private final WebClient webClient = WebClient.builder().build();
 
-    // Redirect URI 설정
-    private final String googleRedirectUri = "https://deungsanlog.site/auth/google/callback";
-    private final String naverRedirectUri = "https://deungsanlog.site/auth/naver/callback";
-    private final String kakaoRedirectUri = "https://deungsanlog.site/auth/kakao/callback"; //  카카오 추가
+    // OAuth Redirect URI 설정 - 환경별 자동 설정
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String googleRedirectUri;
+
+    @Value("${spring.security.oauth2.client.registration.naver.redirect-uri}")
+    private String naverRedirectUri;
+
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    private String kakaoRedirectUri;
+
+    // 프론트엔드 리다이렉트 URI - 환경별 자동 설정
+    @Value("${frontend.redirect-uri}")
+    private String frontendRedirectUri;
 
     // Google 설정
     @Value("${google.oauth.client-id}")
@@ -49,7 +58,7 @@ public class AuthController {
     @Value("${naver.oauth.client-secret}")
     private String naverClientSecret;
 
-    //  카카오 설정 추가
+    // 카카오 설정
     @Value("${kakao.oauth.client-id}")
     private String kakaoClientId;
     @Value("${kakao.oauth.client-secret}")
@@ -140,15 +149,15 @@ public class AuthController {
                                 userResponse.getId()
                         );
 
-                        // 프론트엔드로 토큰과 함께 리다이렉트
-                        String redirectUrl = "https://deungsanlog.site/login?token=" + jwtToken;
+                        // 프론트엔드로 토큰과 함께 리다이렉트 (환경별 자동 설정)
+                        String redirectUrl = frontendRedirectUri + "?token=" + jwtToken;
 
                         return ResponseEntity.status(HttpStatus.FOUND)
                                 .location(URI.create(redirectUrl))
                                 .<Void>build();
                     } catch (Exception e) {
                         log.error("JWT 토큰 생성 실패", e);
-                        String errorRedirectUrl = "https://deungsanlog.site/login/login?error=" +
+                        String errorRedirectUrl = frontendRedirectUri + "?error=" +
                                 URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
 
                         return ResponseEntity.status(HttpStatus.FOUND)
@@ -158,7 +167,7 @@ public class AuthController {
                 })
                 .onErrorResume(error -> {
                     log.error("Google OAuth2 로그인 실패", error);
-                    String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
+                    String errorRedirectUrl = frontendRedirectUri + "?error=" +
                             URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
 
                     ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
@@ -190,15 +199,15 @@ public class AuthController {
                                 userResponse.getId()
                         );
 
-                        // 프론트엔드로 토큰과 함께 리다이렉트
-                        String redirectUrl = "https://deungsanlog.site/login?token=" + jwtToken;
+                        // 프론트엔드로 토큰과 함께 리다이렉트 (환경별 자동 설정)
+                        String redirectUrl = frontendRedirectUri + "?token=" + jwtToken;
 
                         return ResponseEntity.status(HttpStatus.FOUND)
                                 .location(URI.create(redirectUrl))
                                 .<Void>build();
                     } catch (Exception e) {
                         log.error("JWT 토큰 생성 실패", e);
-                        String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
+                        String errorRedirectUrl = frontendRedirectUri + "?error=" +
                                 URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
 
                         return ResponseEntity.status(HttpStatus.FOUND)
@@ -208,7 +217,7 @@ public class AuthController {
                 })
                 .onErrorResume(error -> {
                     log.error("네이버 OAuth2 로그인 실패", error);
-                    String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
+                    String errorRedirectUrl = frontendRedirectUri + "?error=" +
                             URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
 
                     ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
@@ -220,7 +229,7 @@ public class AuthController {
     }
 
     /**
-     * 🔥 카카오 OAuth2 콜백 처리 - 프론트엔드로 리다이렉트
+     * 카카오 OAuth2 콜백 처리 - 프론트엔드로 리다이렉트
      */
     @GetMapping("/kakao/callback")
     public Mono<ResponseEntity<Void>> kakaoCallback(@RequestParam String code) {
@@ -238,15 +247,15 @@ public class AuthController {
                                 userResponse.getId()
                         );
 
-                        // 프론트엔드로 토큰과 함께 리다이렉트
-                        String redirectUrl = "https://deungsanlog.site/login?token=" + jwtToken;
+                        // 프론트엔드로 토큰과 함께 리다이렉트 (환경별 자동 설정)
+                        String redirectUrl = frontendRedirectUri + "?token=" + jwtToken;
 
                         return ResponseEntity.status(HttpStatus.FOUND)
                                 .location(URI.create(redirectUrl))
                                 .<Void>build();
                     } catch (Exception e) {
                         log.error("JWT 토큰 생성 실패", e);
-                        String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
+                        String errorRedirectUrl = frontendRedirectUri + "?error=" +
                                 URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
 
                         return ResponseEntity.status(HttpStatus.FOUND)
@@ -256,7 +265,7 @@ public class AuthController {
                 })
                 .onErrorResume(error -> {
                     log.error("카카오 OAuth2 로그인 실패", error);
-                    String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
+                    String errorRedirectUrl = frontendRedirectUri + "?error=" +
                             URLEncoder.encode(error.getMessage(), StandardCharsets.UTF_8);
 
                     ResponseEntity<Void> errorResponse = ResponseEntity.status(HttpStatus.FOUND)
@@ -369,7 +378,7 @@ public class AuthController {
         return userServiceClient.saveOrUpdateUser(request);
     }
 
-    // 카카오 관련 메서드들 추가
+    // 카카오 관련 메서드들
     private Mono<String> exchangeKakaoCodeForToken(String code) {
         log.info("카카오 Access Token 요청 시작 (Client Secret 포함)");
 
@@ -378,7 +387,7 @@ public class AuthController {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "authorization_code");
         formData.add("client_id", kakaoClientId);
-        formData.add("client_secret", kakaoClientSecret);  //  보안 강화
+        formData.add("client_secret", kakaoClientSecret);
         formData.add("redirect_uri", kakaoRedirectUri);
         formData.add("code", code);
 
@@ -409,10 +418,10 @@ public class AuthController {
     private Mono<UserResponse> saveKakaoUserToUserService(KakaoUserInfo kakaoUser) {
         log.info("User Service에 카카오 사용자 정보 저장 시작: kakaoId={}", kakaoUser.getId());
 
-        //  카카오는 이메일이 없으므로 가상 이메일 생성
+        // 카카오는 이메일이 없으므로 가상 이메일 생성
         String virtualEmail = "kakao_" + kakaoUser.getId() + "@kakao.local";
 
-        //  닉네임이 없는 경우 기본값 설정
+        // 닉네임이 없는 경우 기본값 설정
         String nickname = kakaoUser.getNickname();
         if (nickname == null || nickname.trim().isEmpty()) {
             nickname = "카카오사용자_" + kakaoUser.getId();
@@ -421,8 +430,8 @@ public class AuthController {
         log.info("카카오 사용자 정보 - 가상이메일: {}, 닉네임: {}", virtualEmail, nickname);
 
         UserCreateRequest request = UserCreateRequest.builder()
-                .email(virtualEmail)  //  kakao_123456789@kakao.local
-                .nickname(nickname)   //  실제 닉네임 또는 기본값
+                .email(virtualEmail)  // kakao_123456789@kakao.local
+                .nickname(nickname)   // 실제 닉네임 또는 기본값
                 .profileImgUrl(kakaoUser.getProfileImageUrl())
                 .provider("kakao")
                 .providerId(kakaoUser.getId().toString())
