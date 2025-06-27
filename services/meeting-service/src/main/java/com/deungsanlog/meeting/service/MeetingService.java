@@ -165,4 +165,22 @@ public class MeetingService {
             meetingRepository.save(meeting);
         }
     }
+
+    public void rejectMeetingMember(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
+
+        MeetingMember member = meetingMemberRepository.findByMeetingId(meetingId).stream()
+                .filter(m -> m.getUserId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException("신청 내역이 없습니다."));
+
+        if (member.getStatus() != MeetingMember.Status.PENDING) {
+            throw new BadRequestException("거절할 수 없는 상태입니다.");
+        }
+
+        // 거절 처리
+        member.setStatus(MeetingMember.Status.REJECTED);
+        meetingMemberRepository.save(member);
+    }
 }

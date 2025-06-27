@@ -70,4 +70,14 @@ public class MeetingController {
         meetingService.acceptMeetingMember(meetingId, userId);
         return ResponseEntity.ok("수락 완료");
     }
+
+    // 호스트가 신청자 거절
+    @PatchMapping("/{meetingId}/members/{userId}/reject")
+    public ResponseEntity<?> rejectMeetingMember(
+            @PathVariable Long meetingId,
+            @PathVariable Long userId
+    ) {
+        meetingService.rejectMeetingMember(meetingId, userId);
+        return ResponseEntity.ok("거절 완료");
+    }
 }
