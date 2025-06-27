@@ -111,4 +111,30 @@ public class MeetingService {
     public List<MeetingMember> getMeetingMembers(Long meetingId) {
         return meetingMemberRepository.findByMeetingId(meetingId);
     }
+
+    public void applyMeeting(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
+
+        MeetingMember member = meetingMemberRepository.findByMeetingId(meetingId).stream()
+                .filter(m -> m.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+        if (member == null) {
+            // 최초 신청
+            MeetingMember newMember = MeetingMember.builder()
+                    .meetingId(meetingId)
+                    .userId(userId)
+                    .status(MeetingMember.Status.PENDING)
+                    .build();
+            meetingMemberRepository.save(newMember);
+        } else if (member.getStatus() == MeetingMember.Status.REJECTED || member.getStatus() == MeetingMember.Status.CANCELLED) {
+            // 재신청
+            member.setStatus(MeetingMember.Status.PENDING);
+            meetingMemberRepository.save(member);
+        } else if (member.getStatus() == MeetingMember.Status.PENDING || member.getStatus() == MeetingMember.Status.ACCEPTED) {
+            throw new BadRequestException("이미 신청 중이거나 참가 중입니다.");
+        }
+    }
 }

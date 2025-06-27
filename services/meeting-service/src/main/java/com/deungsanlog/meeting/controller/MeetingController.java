@@ -50,4 +50,14 @@ public class MeetingController {
     public ResponseEntity<?> getMeetingById(@PathVariable Long meetingId) {
         return ResponseEntity.ok(meetingService.getMeetingById(meetingId));
     }
+
+    // 모임 신청
+    @PostMapping("/{meetingId}/apply")
+    public ResponseEntity<?> applyMeeting(
+            @PathVariable Long meetingId,
+            @RequestParam Long userId
+    ) {
+        meetingService.applyMeeting(meetingId, userId);
+        return ResponseEntity.ok("신청 완료");
+    }
 }
