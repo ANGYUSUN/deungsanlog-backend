@@ -2,7 +2,7 @@ spring:
   application:
     name: mountain-service
   profiles:
-    active: dev
+    active: prod
     include: keys
   config:
     import: application-keys.yml

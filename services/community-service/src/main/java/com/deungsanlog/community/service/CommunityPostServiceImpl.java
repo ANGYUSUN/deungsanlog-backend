@@ -264,8 +264,11 @@ public class CommunityPostServiceImpl implements CommunityPostService {
 
         List<CommunityPost> posts;
 
-        if (keyword == null || keyword.trim().isEmpty() || "all".equalsIgnoreCase(field)) {
+        if (keyword == null || keyword.trim().isEmpty()) {
             posts = communityPostRepository.findAll(pageable).getContent();
+        } else if ("all".equalsIgnoreCase(field)) {
+            // 제목+내용 모두 포함하는 검색
+            posts = communityPostRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword, pageable).getContent();
         } else if ("title".equalsIgnoreCase(field)) {
             posts = communityPostRepository.findByTitleContainingIgnoreCase(keyword, pageable).getContent();
         } else if ("content".equalsIgnoreCase(field)) {

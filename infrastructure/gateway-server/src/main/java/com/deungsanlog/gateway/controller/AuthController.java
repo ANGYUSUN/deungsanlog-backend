@@ -148,7 +148,7 @@ public class AuthController {
                                 .<Void>build();
                     } catch (Exception e) {
                         log.error("JWT 토큰 생성 실패", e);
-                        String errorRedirectUrl = "https://deungsanlog.site/login/login?error=" +
+                        String errorRedirectUrl = "https://deungsanlog.site/login?error=" +
                                 URLEncoder.encode("JWT 토큰 생성 실패", StandardCharsets.UTF_8);
 
                         return ResponseEntity.status(HttpStatus.FOUND)
