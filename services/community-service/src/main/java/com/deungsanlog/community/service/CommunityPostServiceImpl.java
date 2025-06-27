@@ -372,4 +372,61 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         return result;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> searchPostsWithTotalPages(String sort, String field, String keyword, int page, int size) {
+        Sort sorting;
+        if ("popular".equalsIgnoreCase(sort)) {
+            sorting = Sort.by(Sort.Direction.DESC, "likeCount");
+        } else if ("oldest".equalsIgnoreCase(sort)) {
+            sorting = Sort.by(Sort.Direction.ASC, "createdAt");
+        } else {
+            sorting = Sort.by(Sort.Direction.DESC, "createdAt");
+        }
+        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1), sorting);
+
+        Page<CommunityPost> postPage;
+        if (keyword == null || keyword.trim().isEmpty()) {
+            postPage = communityPostRepository.findAll(pageable);
+        } else if ("all".equalsIgnoreCase(field)) {
+            postPage = communityPostRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword, pageable);
+        } else if ("title".equalsIgnoreCase(field)) {
+            postPage = communityPostRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+        } else if ("content".equalsIgnoreCase(field)) {
+            postPage = communityPostRepository.findByContentContainingIgnoreCase(keyword, pageable);
+        } else {
+            postPage = communityPostRepository.findAll(pageable);
+        }
+
+        List<CommunityPostResponse> posts = postPage.getContent().stream()
+                .map(post -> {
+                    String nickname = userClient.getNickname(post.getUserId());
+                    List<String> imageUrls = imageRepository.findAllByPostId(post.getId())
+                            .stream()
+                            .map(CommunityPostImage::getImageUrl)
+                            .collect(Collectors.toList());
+
+                    return CommunityPostResponse.builder()
+                            .id(post.getId())
+                            .userId(post.getUserId())
+                            .nickname(nickname)
+                            .mountainId(post.getMountainId())
+                            .title(post.getTitle())
+                            .content(post.getContent())
+                            .hasImage(post.isHasImage())
+                            .likeCount(post.getLikeCount())
+                            .commentCount(post.getCommentCount())
+                            .createdAt(post.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .updatedAt(post.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .imageUrls(imageUrls)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalPages", postPage.getTotalPages());
+        result.put("posts", posts);
+        return result;
+    }
+
 }
