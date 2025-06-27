@@ -112,6 +112,12 @@ public class MeetingService {
         return meetingMemberRepository.findByMeetingId(meetingId);
     }
 
+    public List<MeetingMember> getAcceptedMeetingMembers(Long meetingId) {
+        return meetingMemberRepository.findByMeetingId(meetingId).stream()
+                .filter(m -> m.getStatus() == MeetingMember.Status.ACCEPTED)
+                .toList();
+    }
+
     public void applyMeeting(Long meetingId, Long userId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));

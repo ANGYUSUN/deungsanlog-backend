@@ -39,10 +39,10 @@ public class MeetingController {
         return ResponseEntity.ok(meetingService.searchMeetings(status, sort, keyword, page));
     }
 
-    // 특정 모임의 멤버 목록 조회
+    // 특정 모임의 ACCEPTED 멤버 목록 조회
     @GetMapping("/{meetingId}/members")
     public ResponseEntity<?> getMeetingMembers(@PathVariable Long meetingId) {
-        return ResponseEntity.ok(meetingService.getMeetingMembers(meetingId));
+        return ResponseEntity.ok(meetingService.getAcceptedMeetingMembers(meetingId));
     }
 
     // 모임 상세 조회
