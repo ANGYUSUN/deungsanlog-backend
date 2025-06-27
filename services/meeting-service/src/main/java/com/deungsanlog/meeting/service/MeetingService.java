@@ -118,6 +118,12 @@ public class MeetingService {
                 .toList();
     }
 
+    public List<MeetingMember> getPendingApplicants(Long meetingId) {
+        return meetingMemberRepository.findByMeetingId(meetingId).stream()
+                .filter(m -> m.getStatus() == MeetingMember.Status.PENDING)
+                .toList();
+    }
+
     public void applyMeeting(Long meetingId, Long userId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
@@ -188,5 +194,22 @@ public class MeetingService {
         // 거절 처리
         member.setStatus(MeetingMember.Status.REJECTED);
         meetingMemberRepository.save(member);
+    }
+
+    public void cancelMeetingApplication(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
+
+        MeetingMember member = meetingMemberRepository.findByMeetingId(meetingId).stream()
+                .filter(m -> m.getUserId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException("신청 내역이 없습니다."));
+
+        if (member.getStatus() == MeetingMember.Status.PENDING || member.getStatus() == MeetingMember.Status.ACCEPTED) {
+            member.setStatus(MeetingMember.Status.CANCELLED);
+            meetingMemberRepository.save(member);
+        } else {
+            throw new BadRequestException("취소할 수 없는 상태입니다.");
+        }
     }
 }

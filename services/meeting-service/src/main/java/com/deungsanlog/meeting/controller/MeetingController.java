@@ -80,4 +80,14 @@ public class MeetingController {
         meetingService.rejectMeetingMember(meetingId, userId);
         return ResponseEntity.ok("거절 완료");
     }
+
+    // 신청자가 본인의 신청을 취소
+    @DeleteMapping("/{meetingId}/cancel")
+    public ResponseEntity<?> cancelMeetingApplication(
+            @PathVariable Long meetingId,
+            @RequestParam Long userId
+    ) {
+        meetingService.cancelMeetingApplication(meetingId, userId);
+        return ResponseEntity.ok("신청 취소 완료");
+    }
 }
