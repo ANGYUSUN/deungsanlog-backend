@@ -137,4 +137,32 @@ public class MeetingService {
             throw new BadRequestException("이미 신청 중이거나 참가 중입니다.");
         }
     }
+
+    public void acceptMeetingMember(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
+
+        MeetingMember member = meetingMemberRepository.findByMeetingId(meetingId).stream()
+                .filter(m -> m.getUserId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException("신청 내역이 없습니다."));
+
+        if (member.getStatus() != MeetingMember.Status.PENDING) {
+            throw new BadRequestException("수락할 수 없는 상태입니다.");
+        }
+
+        // 수락 처리
+        member.setStatus(MeetingMember.Status.ACCEPTED);
+        meetingMemberRepository.save(member);
+
+        // ACCEPTED 인원 수 체크
+        long acceptedCount = meetingMemberRepository.findByMeetingId(meetingId).stream()
+                .filter(m -> m.getStatus() == MeetingMember.Status.ACCEPTED)
+                .count();
+
+        if (acceptedCount >= meeting.getMaxParticipants()) {
+            meeting.setStatus(MeetingStatus.FULL);
+            meetingRepository.save(meeting);
+        }
+    }
 }

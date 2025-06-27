@@ -60,4 +60,14 @@ public class MeetingController {
         meetingService.applyMeeting(meetingId, userId);
         return ResponseEntity.ok("신청 완료");
     }
+
+    // 호스트가 신청자 수락
+    @PatchMapping("/{meetingId}/members/{userId}/accept")
+    public ResponseEntity<?> acceptMeetingMember(
+            @PathVariable Long meetingId,
+            @PathVariable Long userId
+    ) {
+        meetingService.acceptMeetingMember(meetingId, userId);
+        return ResponseEntity.ok("수락 완료");
+    }
 }
