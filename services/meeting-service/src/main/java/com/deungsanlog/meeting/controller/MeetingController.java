@@ -44,4 +44,10 @@ public class MeetingController {
     public ResponseEntity<?> getMeetingMembers(@PathVariable Long meetingId) {
         return ResponseEntity.ok(meetingService.getMeetingMembers(meetingId));
     }
+
+    // 모임 상세 조회
+    @GetMapping("/{meetingId}")
+    public ResponseEntity<?> getMeetingById(@PathVariable Long meetingId) {
+        return ResponseEntity.ok(meetingService.getMeetingById(meetingId));
+    }
 }

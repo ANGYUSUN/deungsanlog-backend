@@ -103,6 +103,10 @@ public class MeetingService {
         }
     }
 
+    public Meeting getMeetingById(Long meetingId) {
+        return meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
+    }
 
     public List<MeetingMember> getMeetingMembers(Long meetingId) {
         return meetingMemberRepository.findByMeetingId(meetingId);
