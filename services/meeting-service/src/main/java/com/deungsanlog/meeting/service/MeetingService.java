@@ -53,13 +53,13 @@ public class MeetingService {
         return saved;
     }
 
-    public Page<Meeting> getAllMeetings(int page) {
+    public Page<Meeting> getAllMeetings(int page, int size) {
         return meetingRepository.findAll(
-                PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt"))
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
         );
     }
 
-    public Page<Meeting> searchMeetings(String status, String sort, String keyword, int page) {
+    public Page<Meeting> searchMeetings(String status, String sort, String keyword, int page, int size) {
         // 정렬 옵션 결정
         Sort sortOption;
         switch (sort) {
@@ -89,7 +89,7 @@ public class MeetingService {
         }
 
         // 쿼리 분기
-        Pageable pageable = PageRequest.of(page, 10, sortOption);
+        Pageable pageable = PageRequest.of(page, size, sortOption);
         if (meetingStatus != null) {
             // 상태 + 제목 검색
             return meetingRepository.findByStatusAndTitleContainingIgnoreCase(

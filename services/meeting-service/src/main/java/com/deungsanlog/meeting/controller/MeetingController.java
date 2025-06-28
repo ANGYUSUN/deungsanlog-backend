@@ -25,8 +25,16 @@ public class MeetingController {
 
     // 전체 모임 목록 조회
     @GetMapping("/all")
-    public ResponseEntity<?> getAllMeetings(@RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.ok(meetingService.getAllMeetings(page));
+    public ResponseEntity<?> getAllMeetings(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size) {
+        var meetingPage = meetingService.getAllMeetings(page, size);
+        return ResponseEntity.ok(
+                java.util.Map.of(
+                        "meetings", meetingPage.getContent(),
+                        "size", meetingPage.getSize(),
+                        "totalPages", meetingPage.getTotalPages()
+                )
+        );
     }
 
     @GetMapping("/search")
@@ -34,9 +42,17 @@ public class MeetingController {
             @RequestParam(defaultValue = "all") String status,
             @RequestParam(defaultValue = "deadline") String sort,
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "0") int page
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(meetingService.searchMeetings(status, sort, keyword, page));
+        var meetingPage = meetingService.searchMeetings(status, sort, keyword, page, size);
+        return ResponseEntity.ok(
+                java.util.Map.of(
+                        "meetings", meetingPage.getContent(),
+                        "size", meetingPage.getSize(),
+                        "totalPages", meetingPage.getTotalPages()
+                )
+        );
     }
 
     // 참가자만 조회
