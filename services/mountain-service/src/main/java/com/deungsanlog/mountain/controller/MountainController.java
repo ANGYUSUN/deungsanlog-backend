@@ -60,5 +60,14 @@ public class MountainController {
         return mountainService.getMountainBasic(mountainId);
     }
 
-   
+    /**
+     * 산 상세 정보(1주일치 일출/일몰, 오늘 날씨, 산불위험예보) 반환
+     * GET /api/mountains/detail?mountainId=11
+     */
+    @GetMapping("/detail")
+    public MountainDetailDto getMountainDetail(@RequestParam Long mountainId) {
+        return mountainService.getMountainDetail(mountainId);
+    }
+
+
 }
