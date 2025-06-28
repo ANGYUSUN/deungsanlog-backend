@@ -226,4 +226,20 @@ public class MeetingService {
         meeting.setStatus(MeetingStatus.CANCELLED);
         meetingRepository.save(meeting);
     }
+
+    public List<Long> getAcceptedMeetingIdsByUserId(Long userId) {
+        return meetingMemberRepository.findByUserIdAndStatus(userId, MeetingMember.Status.ACCEPTED)
+                .stream()
+                .map(MeetingMember::getMeetingId)
+                .distinct()
+                .toList();
+    }
+
+    public List<Long> getAllMeetingIdsByUserId(Long userId) {
+        return meetingMemberRepository.findByUserId(userId)
+                .stream()
+                .map(MeetingMember::getMeetingId)
+                .distinct()
+                .toList();
+    }
 }
