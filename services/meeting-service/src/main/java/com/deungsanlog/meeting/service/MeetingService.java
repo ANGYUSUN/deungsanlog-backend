@@ -219,4 +219,11 @@ public class MeetingService {
         meeting.setStatus(MeetingStatus.CLOSED);
         meetingRepository.save(meeting);
     }
+
+    public void cancelMeeting(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
+        meeting.setStatus(MeetingStatus.CANCELLED);
+        meetingRepository.save(meeting);
+    }
 }

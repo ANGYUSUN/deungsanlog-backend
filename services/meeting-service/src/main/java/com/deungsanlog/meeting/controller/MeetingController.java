@@ -119,4 +119,11 @@ public class MeetingController {
         meetingService.closeMeeting(meetingId);
         return ResponseEntity.ok("모임이 CLOSED 상태로 변경되었습니다.");
     }
+
+    // 모임 CANCELLED 처리
+    @PatchMapping("/{meetingId}/cancelled")
+    public ResponseEntity<?> cancelMeeting(@PathVariable Long meetingId) {
+        meetingService.cancelMeeting(meetingId);
+        return ResponseEntity.ok("모임이 CANCELLED 상태로 변경되었습니다.");
+    }
 }
