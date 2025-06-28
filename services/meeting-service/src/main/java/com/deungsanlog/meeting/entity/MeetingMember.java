@@ -20,16 +20,30 @@ public class MeetingMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "meeting_id", nullable = false)
     private Long meetingId;
 
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     @Enumerated(EnumType.STRING)
-    private Status status = Status.JOINED;
+    @Column(nullable = false)
+    private Status status = Status.PENDING;
 
+    @Column(name = "joined_at", nullable = false)
     private LocalDateTime joinedAt = LocalDateTime.now();
 
+    @PrePersist
+    public void prePersist() {
+        if (joinedAt == null) {
+            joinedAt = LocalDateTime.now();
+        }
+    }
+
     public enum Status {
-        JOINED, CANCELLED
+        PENDING,     // 신청함 (대기 중)
+        ACCEPTED,    // 수락됨 (참가자)
+        REJECTED,    // 거절됨
+        CANCELLED    // 본인이 취소
     }
 }

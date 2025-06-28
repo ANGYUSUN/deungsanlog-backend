@@ -25,8 +25,16 @@ public class MeetingController {
 
     // 전체 모임 목록 조회
     @GetMapping("/all")
-    public ResponseEntity<?> getAllMeetings(@RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.ok(meetingService.getAllMeetings(page));
+    public ResponseEntity<?> getAllMeetings(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size) {
+        var meetingPage = meetingService.getAllMeetings(page, size);
+        return ResponseEntity.ok(
+                java.util.Map.of(
+                        "meetings", meetingPage.getContent(),
+                        "size", meetingPage.getSize(),
+                        "totalPages", meetingPage.getTotalPages()
+                )
+        );
     }
 
     @GetMapping("/search")
@@ -34,14 +42,74 @@ public class MeetingController {
             @RequestParam(defaultValue = "all") String status,
             @RequestParam(defaultValue = "deadline") String sort,
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "0") int page
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(meetingService.searchMeetings(status, sort, keyword, page));
+        var meetingPage = meetingService.searchMeetings(status, sort, keyword, page, size);
+        return ResponseEntity.ok(
+                java.util.Map.of(
+                        "meetings", meetingPage.getContent(),
+                        "size", meetingPage.getSize(),
+                        "totalPages", meetingPage.getTotalPages()
+                )
+        );
     }
 
-    // 특정 모임의 멤버 목록 조회
-    @GetMapping("/{meetingId}/members")
-    public ResponseEntity<?> getMeetingMembers(@PathVariable Long meetingId) {
-        return ResponseEntity.ok(meetingService.getMeetingMembers(meetingId));
+    // 참가자만 조회
+    @GetMapping("/{meetingId}/accepted-members")
+    public ResponseEntity<?> getAcceptedMeetingMembers(@PathVariable Long meetingId) {
+        return ResponseEntity.ok(meetingService.getAcceptedMeetingMembers(meetingId));
+    }
+
+    // 신청자만 조회
+    @GetMapping("/{meetingId}/pending-applicants")
+    public ResponseEntity<?> getPendingApplicants(@PathVariable Long meetingId) {
+        return ResponseEntity.ok(meetingService.getPendingApplicants(meetingId));
+    }
+
+    // 모임 상세 조회
+    @GetMapping("/{meetingId}")
+    public ResponseEntity<?> getMeetingById(@PathVariable Long meetingId) {
+        return ResponseEntity.ok(meetingService.getMeetingById(meetingId));
+    }
+
+    // 모임 신청
+    @PostMapping("/{meetingId}/apply")
+    public ResponseEntity<?> applyMeeting(
+            @PathVariable Long meetingId,
+            @RequestParam Long userId
+    ) {
+        meetingService.applyMeeting(meetingId, userId);
+        return ResponseEntity.ok("신청 완료");
+    }
+
+    // 호스트가 신청자 수락
+    @PatchMapping("/{meetingId}/members/{userId}/accept")
+    public ResponseEntity<?> acceptMeetingMember(
+            @PathVariable Long meetingId,
+            @PathVariable Long userId
+    ) {
+        meetingService.acceptMeetingMember(meetingId, userId);
+        return ResponseEntity.ok("수락 완료");
+    }
+
+    // 호스트가 신청자 거절
+    @PatchMapping("/{meetingId}/members/{userId}/reject")
+    public ResponseEntity<?> rejectMeetingMember(
+            @PathVariable Long meetingId,
+            @PathVariable Long userId
+    ) {
+        meetingService.rejectMeetingMember(meetingId, userId);
+        return ResponseEntity.ok("거절 완료");
+    }
+
+    // 신청자가 본인의 신청을 취소
+    @DeleteMapping("/{meetingId}/cancel")
+    public ResponseEntity<?> cancelMeetingApplication(
+            @PathVariable Long meetingId,
+            @RequestParam Long userId
+    ) {
+        meetingService.cancelMeetingApplication(meetingId, userId);
+        return ResponseEntity.ok("신청 취소 완료");
     }
 }
