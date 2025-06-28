@@ -9,9 +9,10 @@ import com.deungsanlog.mountain.entity.Mountain;
 import com.deungsanlog.mountain.entity.MountainDescription;
 import com.deungsanlog.mountain.entity.MountainSunInfo;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,8 +32,8 @@ public class MountainDetailDto {
     // 산 상세 설명
     private MountainDescription description;
 
-    // 일출/일몰 정보
-    private MountainSunInfo sunInfo;
+    // 일출/일몰 정보 (1주일치)
+    private List<MountainSunInfo> sunInfoList;
 
     // ===== 실시간 API 데이터 =====
 
@@ -47,10 +48,10 @@ public class MountainDetailDto {
     /**
      * 기존 DB 데이터만 포함하는 생성자 (기존 코드 호환성)
      */
-    public MountainDetailDto(Mountain mountain, MountainDescription description, MountainSunInfo sunInfo) {
+    public MountainDetailDto(Mountain mountain, MountainDescription description, List<MountainSunInfo> sunInfoList) {
         this.mountain = mountain;
         this.description = description;
-        this.sunInfo = sunInfo;
+        this.sunInfoList = sunInfoList;
         this.weatherInfo = null;
         this.fireRiskInfo = null;
     }
@@ -58,11 +59,11 @@ public class MountainDetailDto {
     /**
      * 모든 데이터를 포함하는 생성자 (새로운 기능)
      */
-    public MountainDetailDto(Mountain mountain, MountainDescription description, MountainSunInfo sunInfo,
+    public MountainDetailDto(Mountain mountain, MountainDescription description, List<MountainSunInfo> sunInfoList,
                              Map<String, Object> weatherInfo, Map<String, Object> fireRiskInfo) {
         this.mountain = mountain;
         this.description = description;
-        this.sunInfo = sunInfo;
+        this.sunInfoList = sunInfoList;
         this.weatherInfo = weatherInfo;
         this.fireRiskInfo = fireRiskInfo;
     }

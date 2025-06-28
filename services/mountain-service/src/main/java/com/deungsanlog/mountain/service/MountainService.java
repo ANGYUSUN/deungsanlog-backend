@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,9 +61,8 @@ public class MountainService {
             description = decodeHtmlEntities(description);
         }
 
-        // 3. 오늘 일출/일몰 정보 조회 (mountainId와 date로 조회)
-        MountainSunInfo sunInfo = mountainSunInfoRepository
-                .findByMountainIdAndDate(mountain.getId(), LocalDate.now()).orElse(null);
+        // 3. 오늘 ~ 7일치 일출/일몰 정보 조회 (mountainId와 date로 조회)
+        List<MountainSunInfo> sunInfoList = getWeekSunInfo(mountain.getId());
 
         // 4. 실시간 날씨 정보 조회
         Map<String, Object> weatherInfo = getWeatherInfo(mountain);
@@ -71,7 +71,7 @@ public class MountainService {
         Map<String, Object> fireRiskInfo = getFireRiskInfo(mountain);
 
         // 6. 모든 데이터를 하나로 합쳐서 반환
-        return new MountainDetailDto(mountain, description, sunInfo, weatherInfo, fireRiskInfo);
+        return new MountainDetailDto(mountain, description, sunInfoList, weatherInfo, fireRiskInfo);
     }
 
     /**
@@ -238,15 +238,14 @@ public class MountainService {
             description = decodeHtmlEntities(description);
         }
 
-        // 오늘 일출/일몰 정보 (mountainId와 date로 조회)
-        MountainSunInfo sunInfo = mountainSunInfoRepository
-                .findByMountainIdAndDate(mountainId, LocalDate.now()).orElse(null);
+        // 오늘 ~ 7일치 일출/일몰 정보 (mountainId와 date로 조회)
+        List<MountainSunInfo> sunInfoList = getWeekSunInfo(mountainId);
 
         // 실시간 정보 추가
         Map<String, Object> weatherInfo = getWeatherInfo(mountain);
         Map<String, Object> fireRiskInfo = getFireRiskInfo(mountain);
 
-        return new MountainDetailDto(mountain, description, sunInfo, weatherInfo, fireRiskInfo);
+        return new MountainDetailDto(mountain, description, sunInfoList, weatherInfo, fireRiskInfo);
     }
 
     /**
@@ -274,5 +273,19 @@ public class MountainService {
         return mountainRepository.findAll().stream()
                 .filter(mountain -> mountain.getLatitude() != null && mountain.getLongitude() != null)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 1주일치(오늘~6일 후) 일출/일몰 정보 조회
+     */
+    private List<MountainSunInfo> getWeekSunInfo(Long mountainId) {
+        LocalDate today = LocalDate.now();
+        LocalDate end = today.plusDays(6);
+        List<MountainSunInfo> result = new ArrayList<>();
+        for (LocalDate date = today; !date.isAfter(end); date = date.plusDays(1)) {
+            mountainSunInfoRepository.findByMountainIdAndDate(mountainId, date)
+                    .ifPresent(result::add);
+        }
+        return result;
     }
 }
