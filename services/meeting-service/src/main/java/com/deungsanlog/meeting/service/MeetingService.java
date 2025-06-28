@@ -212,4 +212,34 @@ public class MeetingService {
             throw new BadRequestException("취소할 수 없는 상태입니다.");
         }
     }
+
+    public void closeMeeting(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
+        meeting.setStatus(MeetingStatus.CLOSED);
+        meetingRepository.save(meeting);
+    }
+
+    public void cancelMeeting(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
+        meeting.setStatus(MeetingStatus.CANCELLED);
+        meetingRepository.save(meeting);
+    }
+
+    public List<Long> getAcceptedMeetingIdsByUserId(Long userId) {
+        return meetingMemberRepository.findByUserIdAndStatus(userId, MeetingMember.Status.ACCEPTED)
+                .stream()
+                .map(MeetingMember::getMeetingId)
+                .distinct()
+                .toList();
+    }
+
+    public List<Long> getAllMeetingIdsByUserId(Long userId) {
+        return meetingMemberRepository.findByUserId(userId)
+                .stream()
+                .map(MeetingMember::getMeetingId)
+                .distinct()
+                .toList();
+    }
 }

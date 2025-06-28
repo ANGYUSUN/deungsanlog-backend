@@ -112,4 +112,30 @@ public class MeetingController {
         meetingService.cancelMeetingApplication(meetingId, userId);
         return ResponseEntity.ok("신청 취소 완료");
     }
+
+    // 모임 CLOSE 처리
+    @PatchMapping("/{meetingId}/closed")
+    public ResponseEntity<?> closeMeeting(@PathVariable Long meetingId) {
+        meetingService.closeMeeting(meetingId);
+        return ResponseEntity.ok("모임이 CLOSED 상태로 변경되었습니다.");
+    }
+
+    // 모임 CANCELLED 처리
+    @PatchMapping("/{meetingId}/cancelled")
+    public ResponseEntity<?> cancelMeeting(@PathVariable Long meetingId) {
+        meetingService.cancelMeeting(meetingId);
+        return ResponseEntity.ok("모임이 CANCELLED 상태로 변경되었습니다.");
+    }
+
+    // userId가 시도했던 모든 모임(meetingId) 리스트 반환 (상태 무관)
+    @GetMapping("/my-all-meeting-ids")
+    public ResponseEntity<?> getAllMyMeetingIds(@RequestParam Long userId) {
+        return ResponseEntity.ok(meetingService.getAllMeetingIdsByUserId(userId));
+    }
+
+    // userId가 ACCEPTED 상태로 참여중인 meetingId 리스트 반환
+    @GetMapping("/my-meeting-ids")
+    public ResponseEntity<?> getMyMeetingIds(@RequestParam Long userId) {
+        return ResponseEntity.ok(meetingService.getAcceptedMeetingIdsByUserId(userId));
+    }
 }
