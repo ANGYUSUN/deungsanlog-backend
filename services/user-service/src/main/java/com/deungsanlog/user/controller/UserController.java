@@ -5,6 +5,7 @@ import com.deungsanlog.user.dto.UserResponse;
 import com.deungsanlog.user.dto.UserUpdateRequest;
 import com.deungsanlog.user.entity.User;
 import com.deungsanlog.user.repository.UserRepository;
+import com.deungsanlog.user.service.FavoriteService;
 import com.deungsanlog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,6 +29,9 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
+
+    // 🆕 즐겨찾기 서비스 추가
+    private final FavoriteService favoriteService;
 
     /**
      * 서비스 상태 확인 (Gateway에서 호출)
@@ -180,6 +185,25 @@ public class UserController {
     }
 
     /**
+     * 🆕 특정 산을 즐겨찾기한 사용자 ID 목록 조회 (Mountain Service용)
+     * 최종 경로: /api/users/mountains/{mountainId}/favorite-users
+     */
+    @GetMapping("/mountains/{mountainId}/favorite-users")
+    public ResponseEntity<List<Long>> getFavoriteUserIds(@PathVariable Long mountainId) {
+        log.info("특정 산 즐겨찾기 사용자 조회: mountainId={}", mountainId);
+
+        try {
+            // 기존 메서드 사용
+            List<Long> favoriteUserIds = favoriteService.getUserIdsByMountainId(mountainId);
+            log.info("즐겨찾기 사용자 조회 성공: mountainId={}, userCount={}", mountainId, favoriteUserIds.size());
+            return ResponseEntity.ok(favoriteUserIds);
+        } catch (Exception e) {
+            log.error("즐겨찾기 사용자 조회 실패: mountainId={}, error={}", mountainId, e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
      * 사용자 목록 조회 (관리자용 - 선택사항)
      */
     @GetMapping
@@ -206,5 +230,64 @@ public class UserController {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
         return ResponseEntity.ok(user.getNickname());
+    }
+    /**
+     * ========== 🔔 FCM 토큰 관리 API (NotificationService용) ==========
+     */
+
+    /**
+     * FCM 토큰 조회 (NotificationService에서 호출)
+     */
+    @GetMapping("/internal/users/{userId}/fcm-token")
+    public ResponseEntity<String> getFcmToken(@PathVariable Long userId) {
+        log.info("FCM 토큰 조회 요청: userId={}", userId);
+
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + userId));
+
+            String fcmToken = user.getFcmToken();
+            if (fcmToken == null || fcmToken.isBlank()) {
+                log.info("FCM 토큰이 없음: userId={}", userId);
+                return ResponseEntity.ok(""); // 빈 문자열 반환
+            }
+
+            log.info("FCM 토큰 조회 성공: userId={}", userId);
+            return ResponseEntity.ok(fcmToken);
+
+        } catch (Exception e) {
+            log.error("FCM 토큰 조회 실패: userId={}, error={}", userId, e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * FCM 토큰 저장/업데이트 (NotificationService에서 호출)
+     */
+    @PutMapping("/internal/users/{userId}/fcm-token")
+    public ResponseEntity<Map<String, String>> updateFcmToken(
+            @PathVariable Long userId,
+            @RequestParam("token") String token) {
+
+        log.info("FCM 토큰 업데이트 요청: userId={}", userId);
+
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + userId));
+
+            // FCM 토큰 업데이트
+            user.setFcmToken(token);
+            user.setFcmTokenUpdatedAt(java.time.LocalDateTime.now());
+
+            userRepository.save(user);
+
+            log.info("FCM 토큰 업데이트 성공: userId={}", userId);
+            return ResponseEntity.ok(Map.of("message", "FCM 토큰이 업데이트되었습니다"));
+
+        } catch (Exception e) {
+            log.error("FCM 토큰 업데이트 실패: userId={}, error={}", userId, e.getMessage(), e);
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "FCM 토큰 업데이트 실패"));
+        }
     }
 }

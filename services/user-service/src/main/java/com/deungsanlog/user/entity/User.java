@@ -49,6 +49,12 @@ public class User {
     @Column(name = "provider_id", length = 100, nullable = false)
     private String providerId;
 
+    @Column(name = "fcm_token", length = 500)
+    private String fcmToken;
+
+    @Column(name = "fcm_token_updated_at")
+    private LocalDateTime fcmTokenUpdatedAt;
+
     // 커스텀 생성자 (소셜 로그인용)
     public User(String email, String nickname, String profileImgUrl, String provider, String providerId) {
         this.email = email;

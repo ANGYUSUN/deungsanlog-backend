@@ -40,6 +40,11 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    //JSON 직렬화 (FCM 요청에 사용될 수 있음)
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    // 요청 DTO 유효성 검사
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 dependencyManagement {

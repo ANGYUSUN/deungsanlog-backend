@@ -1,6 +1,5 @@
 package com.deungsanlog.gateway.filter;
 
-
 import com.deungsanlog.gateway.component.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -65,18 +64,40 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         try {
             Claims claims = jwtTokenProvider.getClaims(authToken);
 
-            // [STEP-03] 토큰의 클레임 검증
+            // [STEP-03] 토큰의 클레임 검증 및 사용자 정보 추출
             String email = claims.getSubject();
             String role = jwtTokenProvider.getUserRole(authToken);
 
-            log.info("JWT 토큰 검증 성공: email={}, role={}", email, role);
+            // ✅ JWT에서 userId 추출 (안전하게)
+            Long userId = null;
+            try {
+                if (claims.get("userId") != null) {
+                    userId = Long.valueOf(claims.get("userId").toString());
+                } else if (claims.get("user_id") != null) {
+                    userId = Long.valueOf(claims.get("user_id").toString());
+                } else if (claims.get("id") != null) {
+                    userId = Long.valueOf(claims.get("id").toString());
+                }
+            } catch (Exception e) {
+                log.warn("userId 추출 실패 (계속 진행): {}", e.getMessage());
+            }
 
-            // 요청 헤더에 사용자 정보 추가 (다운스트림 서비스에서 사용 가능)
-            ServerHttpRequest modifiedRequest = request.mutate()
+            log.info("JWT 토큰 검증 성공: email={}, role={}, userId={}", email, role, userId);
+
+            // ✅ 요청 헤더에 사용자 정보 추가
+            ServerHttpRequest.Builder requestBuilder = request.mutate()
                     .header("X-USER-EMAIL", email)
-                    .header("X-USER-ROLE", role)
-                    .build();
+                    .header("X-USER-ROLE", role);
 
+            // ✅ userId가 있을 때만 헤더 추가
+            if (userId != null) {
+                requestBuilder.header("X-USER-ID", userId.toString());
+                log.info("X-USER-ID 헤더 추가: {}", userId);
+            } else {
+                log.warn("JWT에서 userId를 찾을 수 없습니다");
+            }
+
+            ServerHttpRequest modifiedRequest = requestBuilder.build();
             return chain.filter(exchange.mutate().request(modifiedRequest).build());
 
         } catch (Exception e) {
@@ -85,21 +106,23 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         }
     }
 
-    // ===== GlobalGatewayFilter.java =====
-
     /**
-     * 인증이 필요 없는 공개 경로 체크
+     * ✅ 기존 방식 유지: 모든 서비스 경로를 PUBLIC으로 설정
+     * (원래 잘 작동하던 방식)
      */
     private boolean isPublicPath(String path) {
         return path.startsWith("/auth/") ||
                 path.startsWith("/actuator/") ||
                 path.startsWith("/fallback/") ||
-                path.startsWith("/user-service/") ||
-                path.startsWith("/record-service/") ||
-                path.startsWith("/ormie-service/") ||
-                path.startsWith("/community-service/") ||
-                path.startsWith("/meeting-service/") ||
-                path.startsWith("/mountain-service/");
+                path.startsWith("/user-service") ||
+                path.startsWith("/record-service") ||
+                path.startsWith("/ormie-service") ||
+                path.startsWith("/community-service") ||
+                path.startsWith("/meeting-service") ||
+                path.startsWith("/mountain-service") ||
+                path.startsWith("/notification-service");
+
+
     }
 
     /**

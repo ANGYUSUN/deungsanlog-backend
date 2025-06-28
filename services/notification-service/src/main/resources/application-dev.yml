@@ -1,0 +1,48 @@
+# src/main/resources/application-dev.yml
+spring:
+  # JPA 개발환경 설정 (상세 로깅)
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  # 개발용 CORS 설정 (Vite 개발서버)
+  web:
+    cors:
+      allowed-origins: http://localhost:5173
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+      allowed-headers: "*"
+
+firebase:
+  config-path: classpath:firebase/firebase-service-account-dev.json
+
+feign:
+  client:
+    config:
+      default:
+        logger-level: FULL
+
+notification:
+  debug:
+    mode: true
+  test:
+    user-id: 10
+
+logging:
+  level:
+    # notification-service 자체 로그
+    com.deungsanlog.notification: DEBUG
+    com.deungsanlog.notification.client: DEBUG
+
+    # HTTP 요청/응답 레벨
+    org.springframework.web: DEBUG
+
+    # JPA SQL & 바인딩
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+    # Jackson JSON 파싱 디버깅
+    org.springframework.http.converter.json: DEBUG
+    com.fasterxml.jackson.databind: TRACE
