@@ -1,24 +1,38 @@
 package com.deungsanlog.mountain.service;
 
+import com.deungsanlog.mountain.client.FavoriteServiceClient;
+import com.deungsanlog.mountain.client.NotificationServiceClient;
+import com.deungsanlog.mountain.dto.BulkNotificationRequest;
+import com.deungsanlog.mountain.entity.Mountain;
+import com.deungsanlog.mountain.repository.MountainRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * 산림청 산불위험예보 API 호출 서비스
+ * 산림청 산불위험예보 API 호출 서비스 + 알림 발송
  */
 @Service
 @Slf4j
 @RequiredArgsConstructor
+
+
 public class FireRiskApiService {
 
     private final WebClient webClient;
+
+    // ✅ 변경된 의존성들
+    private final FavoriteServiceClient favoriteServiceClient;
+    private final NotificationServiceClient notificationServiceClient;
+    private final MountainRepository mountainRepository;
 
     @Value("${fire.api.key}")
     private String apiKey;
@@ -27,7 +41,7 @@ public class FireRiskApiService {
     private String apiUrl;
 
     /**
-     * 지역별 산불위험예보 조회
+     * 지역별 산불위험예보 조회 + 알림 발송
      */
     public Map<String, Object> getFireRiskInfo(String location) {
         log.info("산불위험예보 조회 시작: location={}", location);
@@ -42,6 +56,17 @@ public class FireRiskApiService {
 
             // 응답 파싱
             Map<String, Object> result = parseFireRiskResponse(apiResponse);
+
+            // 🔥 산불 위험도가 높을 때 알림 전송
+            if (result.containsKey("riskLevelCode") && result.containsKey("success")) {
+                String riskLevelCode = result.get("riskLevelCode").toString();
+
+                // 경보 단계(코드 3)일 때만 알림 전송
+                if ("3".equals(riskLevelCode)) {
+                    sendFireRiskAlert(location, result);
+                }
+            }
+
             log.info("산불위험예보 조회 성공: {}", result);
             return result;
 
@@ -52,8 +77,104 @@ public class FireRiskApiService {
     }
 
     /**
-     * 산림청 API 호출
+     * 🔥 산불 위험 알림 전송
      */
+    private void sendFireRiskAlert(String location, Map<String, Object> riskData) {
+        try {
+            log.info("🚨 산불 위험 알림 전송 시작: location={}", location);
+
+            // 1. 해당 지역의 산들 조회
+            List<Mountain> mountainsInLocation = mountainRepository.findByNameOrLocationContaining(location);
+
+            if (mountainsInLocation.isEmpty()) {
+                log.info("📍 해당 지역에 등록된 산이 없습니다: {}", location);
+                return;
+            }
+
+            String riskLevel = riskData.get("riskLevel").toString();
+            String description = riskData.get("description").toString();
+
+            // 2. 각 산별로 즐겨찾기 사용자들에게 알림 전송
+            for (Mountain mountain : mountainsInLocation) {
+                try {
+                    sendAlertForMountain(mountain, riskLevel, description);
+                } catch (Exception e) {
+                    log.error("❌ 산별 알림 전송 실패: mountainId={}, mountainName={}",
+                            mountain.getId(), mountain.getName(), e);
+                }
+            }
+
+            log.info("✅ 산불 위험 알림 전송 완료: location={}, 대상 산 {}개",
+                    location, mountainsInLocation.size());
+
+        } catch (Exception e) {
+            log.error("❌ 산불 위험 알림 전송 중 오류: location={}", location, e);
+        }
+    }
+
+    /**
+     * 특정 산의 즐겨찾기 사용자들에게 알림 전송
+     */
+    private void sendAlertForMountain(Mountain mountain, String riskLevel, String description) {
+        try {
+            // ✅ favoriteServiceClient 사용
+            List<Long> favoriteUserIds = favoriteServiceClient.getFavoriteUserIds(mountain.getId());
+
+            if (favoriteUserIds.isEmpty()) {
+                log.debug("🔍 {}을(를) 즐겨찾기한 사용자가 없습니다", mountain.getName());
+                return;
+            }
+
+            // 2. 알림 내용 생성
+            String alertContent = String.format(
+                    "%s 지역 산불위험도가 '%s'로 상승했습니다. %s",
+                    mountain.getName(),
+                    riskLevel,
+                    getSimpleRiskMessage(riskLevel)
+            );
+
+            // 3. 알림 요청 생성
+            BulkNotificationRequest request = BulkNotificationRequest.builder()
+                    .userIds(favoriteUserIds)
+                    .type("fire_risk")
+                    .mountainId(mountain.getId())
+                    .mountainName(mountain.getName())
+                    .content(alertContent)
+                    .title("🔥 산불 위험 알림")
+                    .build();
+
+            // 4. 알림 전송
+            ResponseEntity<?> response = notificationServiceClient.sendBulkNotification(request);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("🔥 산불 알림 전송 성공: {} → {}명", mountain.getName(), favoriteUserIds.size());
+            } else {
+                log.error("❌ 산불 알림 전송 실패: {} → 응답코드 {}", mountain.getName(), response.getStatusCode());
+            }
+
+        } catch (Exception e) {
+            log.error("❌ 산별 알림 전송 실패: mountainId={}, mountainName={}",
+                    mountain.getId(), mountain.getName(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 위험도별 간단한 메시지
+     */
+    private String getSimpleRiskMessage(String riskLevel) {
+        switch (riskLevel) {
+            case "경보":
+                return "등산을 자제하고 화기 사용을 금지해주세요.";
+            case "주의":
+                return "등산 시 화기 사용에 각별히 주의해주세요.";
+            default:
+                return "등산 계획을 재검토해주세요.";
+        }
+    }
+
+    // ========== 기존 메서드들 (변경 없음) ==========
+
     private Map<String, Object> callFireRiskApi() {
         String url = apiUrl +
                 "?serviceKey=" + apiKey +
@@ -78,12 +199,8 @@ public class FireRiskApiService {
         }
     }
 
-    /**
-     * 산불위험예보 API 응답 파싱 (실제 구조 반영)
-     */
     private Map<String, Object> parseFireRiskResponse(Map<String, Object> apiResponse) {
         try {
-            // API 응답 구조: response.body.items.item (단일 객체)
             Map<String, Object> response = (Map<String, Object>) apiResponse.get("response");
             if (response == null) {
                 return createErrorResponse("response 키가 없습니다");
@@ -99,7 +216,6 @@ public class FireRiskApiService {
                 return createErrorResponse("items 키가 없습니다");
             }
 
-            // item은 단일 객체 (배열이 아님)
             Map<String, Object> item = (Map<String, Object>) items.get("item");
             if (item == null) {
                 return createErrorResponse("산불위험예보 데이터가 없습니다");
@@ -107,7 +223,6 @@ public class FireRiskApiService {
 
             log.info("파싱할 item 데이터: {}", item);
 
-            // meanavg 값으로 위험도 계산
             Object meanAvgObj = item.get("meanavg");
             if (meanAvgObj == null) {
                 return createErrorResponse("위험도 데이터가 없습니다");
@@ -124,7 +239,6 @@ public class FireRiskApiService {
             result.put("meanAvg", meanAvg);
             result.put("description", riskDescription);
             result.put("precautions", precautions);
-            //result.put("doname", item.get("doname"));
             result.put("analdate", item.get("analdate"));
             result.put("date", LocalDate.now().toString());
             result.put("success", true);
@@ -138,9 +252,6 @@ public class FireRiskApiService {
         }
     }
 
-    /**
-     * meanavg 값으로 산불 위험도 계산
-     */
     private String calculateRiskLevel(int meanAvg) {
         if (meanAvg < 30) {
             return "안전";
@@ -151,9 +262,6 @@ public class FireRiskApiService {
         }
     }
 
-    /**
-     * 위험도별 설명 메시지
-     */
     private String getRiskDescription(String riskLevel) {
         switch (riskLevel) {
             case "안전":
@@ -167,9 +275,6 @@ public class FireRiskApiService {
         }
     }
 
-    /**
-     * 위험도별 주의사항
-     */
     private String getPrecautions(String riskLevel) {
         switch (riskLevel) {
             case "안전":
@@ -183,9 +288,6 @@ public class FireRiskApiService {
         }
     }
 
-    /**
-     * 위험도별 코드 반환
-     */
     private String getRiskLevelCode(String riskLevel) {
         switch (riskLevel) {
             case "안전":
@@ -199,9 +301,6 @@ public class FireRiskApiService {
         }
     }
 
-    /**
-     * 에러 응답 생성
-     */
     private Map<String, Object> createErrorResponse(String message) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", true);

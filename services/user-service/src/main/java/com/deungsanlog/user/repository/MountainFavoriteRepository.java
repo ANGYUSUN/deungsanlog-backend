@@ -64,6 +64,15 @@ public interface MountainFavoriteRepository extends JpaRepository<MountainFavori
     List<Long> findMountainIdsByUserIdOrderByCreatedAtDesc(@Param("userId") Long userId);
 
     /**
+     * 특정 산을 즐겨찾기한 사용자 ID 목록 조회 (알림 전송용)
+     *
+     * @param mountainId 산 ID
+     * @return 사용자 ID 목록
+     */
+    @Query("SELECT mf.userId FROM MountainFavorite mf WHERE mf.mountainId = :mountainId")
+    List<Long> findUserIdsByMountainId(@Param("mountainId") Long mountainId);
+
+    /**
      * 사용자의 즐겨찾기를 모두 삭제 (회원 탈퇴 시 사용)
      *
      * @param userId 사용자 ID

@@ -188,4 +188,5 @@ gradle-app.setting
 # Custom additions
 **/application-keys.yml
 **/bootstrap.properties
-logs/
+logs/services/notification-service/src/main/resources/firebase/*.json
+services/notification-service/build/

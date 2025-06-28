@@ -1,0 +1,75 @@
+# 배포환경 추가 설정 (application-prod.yml)
+spring:
+  # JPA 배포환경 설정 (로깅 최소화)
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  # HikariCP 배포환경 최적화
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # 배포환경 CORS 설정 (실제 도메인)
+  web:
+    cors:
+      allowed-origins: https://deungsanlog.site  # 실제 도메인
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+      allowed-headers: "*"
+
+# Firebase 배포 설정
+firebase:
+  config-path: classpath:firebase/firebase-service-account-prod.json
+
+# 로깅 레벨 (배포환경 - 최소화)
+logging:
+  level:
+    com.deungsanlog.notification: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    root: WARN
+
+  # 로그 파일 설정
+  file:
+    name: /logs/notification-service.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+
+# Feign 클라이언트 배포 설정 (보수적)
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 10000
+        read-timeout: 30000
+        logger-level: NONE
+
+# 알림 배포 설정
+notification:
+  debug:
+    mode: false
+  # 배포환경에서는 테스트 설정 제거 (보안상)
+  frontend:
+    url: https://deungsanlog.site  # 실제 도메인 주소
+
+# 관리 엔드포인트 보안 강화
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# 보안 설정
+security:
+  require-ssl: true

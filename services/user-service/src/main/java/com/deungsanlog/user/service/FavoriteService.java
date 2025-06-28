@@ -179,4 +179,13 @@ public class FavoriteService {
             throw new RuntimeException("즐겨찾기 삭제 실패", e);
         }
     }
+
+    /**
+     * 특정 산을 즐겨찾기한 사용자 ID 목록 조회 (알림 전송용)
+     */
+    @Transactional(readOnly = true)
+    public List<Long> getUserIdsByMountainId(Long mountainId) {
+        log.debug("🔍 산 즐겨찾기 사용자 조회: mountainId={}", mountainId);
+        return favoriteRepository.findUserIdsByMountainId(mountainId);
+    }
 }

@@ -264,7 +264,7 @@ public class FavoriteController {
 
     /**
      * 특정 산의 즐겨찾기 사용자 수 조회
-     * GET /api/mountains/{mountainId}/favorites/count
+     * GET /api/users/mountains/{mountainId}/favorites/count
      */
     @GetMapping("/mountains/{mountainId}/favorites/count")
     public ResponseEntity<Map<String, Object>> getMountainFavoriteCount(@PathVariable Long mountainId) {
@@ -290,4 +290,13 @@ public class FavoriteController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
+    // ========== 🆕 알림 서비스용 API 추가 ==========
+
+    /**
+     * 특정 산을 즐겨찾기한 사용자 ID 목록 조회 (Notification Service에서 호출)
+     * GET /api/users/mountains/{mountainId}/favorite-users
+     */
+
+    
 }

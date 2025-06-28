@@ -1,5 +1,6 @@
 package com.deungsanlog.community.service;
 
+import com.deungsanlog.community.client.NotificationServiceClient;
 import com.deungsanlog.community.client.UserClient;
 import com.deungsanlog.community.domain.CommunityPost;
 import com.deungsanlog.community.domain.CommunityPostImage;
@@ -7,10 +8,12 @@ import com.deungsanlog.community.domain.CommunityPostLike;
 import com.deungsanlog.community.dto.CommunityPostCreateRequest;
 import com.deungsanlog.community.dto.CommunityPostResponse;
 import com.deungsanlog.community.dto.CommunityPostUpdateRequest;
+import com.deungsanlog.community.dto.NotificationRequest;
 import com.deungsanlog.community.repository.CommunityPostImageRepository;
 import com.deungsanlog.community.repository.CommunityPostLikeRepository;
 import com.deungsanlog.community.repository.CommunityPostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommunityPostServiceImpl implements CommunityPostService {
@@ -36,9 +40,11 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     private final UserClient userClient;
     private final CommunityPostLikeRepository communityPostLikeRepository;
 
+    // ❤️ 알림 서비스 추가
+    private final NotificationServiceClient notificationServiceClient;
+
     @Value("${community.upload-path}")
     private String uploadDir;
-
 
     @Override
     @Transactional
@@ -135,7 +141,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public List<CommunityPostResponse> getRecentPosts(int limit) {
@@ -225,14 +230,22 @@ public class CommunityPostServiceImpl implements CommunityPostService {
             throw new IllegalStateException("이미 좋아요를 누른 게시글입니다.");
         }
 
+        // 1. 좋아요 저장
         CommunityPostLike like = CommunityPostLike.builder()
                 .postId(postId)
                 .userId(userId)
                 .build();
         communityPostLikeRepository.save(like);
 
-        // ✅ 좋아요 수 증가
+        // 2. 좋아요 수 증가
         communityPostRepository.incrementLikeCount(postId);
+
+        // 3. ❤️ 좋아요 알림 전송 (자기 좋아요도 알림 보내도록 수정)
+        CommunityPost post = communityPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
+        // ✅ 조건 제거 - 자기 좋아요도 알림 전송
+        sendLikeNotification(post, userId);
     }
 
     @Override
@@ -246,6 +259,54 @@ public class CommunityPostServiceImpl implements CommunityPostService {
 
         // ✅ 좋아요 수 감소
         communityPostRepository.decrementLikeCount(postId);
+    }
+
+    /**
+     * ❤️ 좋아요 알림 전송 (자기 좋아요도 알림 보내도록 수정)
+     */
+    private void sendLikeNotification(CommunityPost post, Long likedUserId) {
+        try {
+            log.info("❤️ 좋아요 알림 전송 시작: postId={}, postAuthor={}, liker={}",
+                    post.getId(), post.getUserId(), likedUserId);
+
+            // 1. 좋아요한 사용자 닉네임 조회
+            String likerName = userClient.getNickname(likedUserId);
+
+            // 2. 알림 내용 생성
+            String postTitle = post.getTitle();
+            if (postTitle.length() > 20) {
+                postTitle = postTitle.substring(0, 20) + "...";
+            }
+
+            // ✅ 자기 좋아요인 경우와 타인 좋아요인 경우 구분
+            String content;
+            if (post.getUserId().equals(likedUserId)) {
+                // 자기 게시글에 자기가 좋아요
+                content = String.format("회원님이 '%s' 게시글에 좋아요를 눌렀습니다.", postTitle);
+            } else {
+                // 타인이 좋아요
+                content = String.format("%s님이 '%s' 게시글에 좋아요를 눌렀습니다.", likerName, postTitle);
+            }
+
+            // 3. 알림 요청 생성
+            NotificationRequest notificationRequest = NotificationRequest.builder()
+                    .userId(post.getUserId()) // 게시글 작성자에게 알림 (자기 자신 포함)
+                    .type("like")
+                    .content(content)
+                    .title("❤️ 좋아요 알림")
+                    .build();
+
+            // 4. 알림 전송
+            notificationServiceClient.sendNotification(notificationRequest);
+
+            log.info("❤️ 좋아요 알림 전송 성공: postId={} → userId={}",
+                    post.getId(), post.getUserId());
+
+        } catch (Exception e) {
+            log.error("❌ 좋아요 알림 전송 실패: postId={}, error={}",
+                    post.getId(), e.getMessage());
+            // 알림 실패가 좋아요를 막지 않도록 예외를 잡아서 로그만 남김
+        }
     }
 
     @Override
@@ -428,5 +489,4 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         result.put("posts", posts);
         return result;
     }
-
 }
