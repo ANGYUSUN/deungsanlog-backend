@@ -289,12 +289,24 @@ public class CommunityPostServiceImpl implements CommunityPostService {
             }
 
             // 3. 알림 요청 생성
+            // 디버깅: postId 확인
+            log.info("🔍 좋아요 알림 전송 전 postId 확인: postId={}, post.getId()={}", post.getId(), post.getId());
+
             NotificationRequest notificationRequest = NotificationRequest.builder()
                     .userId(post.getUserId()) // 게시글 작성자에게 알림 (자기 자신 포함)
                     .type("like")
                     .content(content)
                     .title("❤️ 좋아요 알림")
+                    .postId(post.getId())
                     .build();
+
+            // 디버깅: NotificationRequest 객체 확인
+            log.info("🔍 NotificationRequest 객체 상세: userId={}, type={}, content={}, title={}, postId={}", 
+                    notificationRequest.getUserId(), 
+                    notificationRequest.getType(), 
+                    notificationRequest.getContent(), 
+                    notificationRequest.getTitle(), 
+                    notificationRequest.getPostId());
 
             // 4. 알림 전송
             notificationServiceClient.sendNotification(notificationRequest);

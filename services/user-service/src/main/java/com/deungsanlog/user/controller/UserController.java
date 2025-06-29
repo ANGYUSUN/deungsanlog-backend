@@ -109,9 +109,17 @@ public class UserController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("userId") Long userId) {
 
-        log.info("프로필 이미지 업로드 요청: userId={}, fileName={}", userId, file.getOriginalFilename());
+        log.info("프로필 이미지 업로드 요청: userId={}, fileName={}, fileSize={}MB", 
+                userId, file.getOriginalFilename(), file.getSize() / (1024 * 1024));
 
         try {
+            // 사용자 존재 여부 확인
+            if (!userRepository.existsById(userId)) {
+                log.error("사용자를 찾을 수 없음: userId={}", userId);
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "사용자를 찾을 수 없습니다."));
+            }
+
             // 파일 검증
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest()
@@ -123,9 +131,10 @@ public class UserController {
                         .body(Map.of("error", "이미지 파일만 업로드 가능합니다."));
             }
 
-            if (file.getSize() > 5 * 1024 * 1024) { // 5MB 제한
+            // 파일 크기 제한을 500MB로 수정
+            if (file.getSize() > 500 * 1024 * 1024) { // 500MB 제한
                 return ResponseEntity.badRequest()
-                        .body(Map.of("error", "파일 크기는 5MB 이하로 업로드해주세요."));
+                        .body(Map.of("error", "파일 크기는 500MB 이하로 업로드해주세요."));
             }
 
             // 🔧 파일 저장 경로 수정 (실제 폴더 구조에 맞춤)

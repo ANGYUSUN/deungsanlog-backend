@@ -35,3 +35,15 @@ spring:
 publicdata:
   api:
     key: ${publicdata.api.key}
+
+# 산불 API 설정
+fire:
+  api:
+    key: ${fire.api.key}
+    url: ${fire.api.url}
+
+# 날씨 API 설정
+weather:
+  api:
+    key: ${weather.api.key}
+    url: ${weather.api.url}
