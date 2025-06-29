@@ -42,11 +42,22 @@ public class NotificationController {
         log.info("📨 외부 서비스 알림 요청: userId={}, type={}", request.getUserId(), request.getType());
 
         try {
-            notificationService.sendNotificationToUser(
-                    request.getUserId(),
-                    request.getType(),
-                    request.getContent()
-            );
+            // 모임 ID가 있으면 모임 ID를 포함한 알림 전송
+            if (request.getMeetingId() != null) {
+                notificationService.sendNotificationToUser(
+                        request.getUserId(),
+                        request.getType(),
+                        request.getContent(),
+                        request.getMeetingId()
+                );
+            } else {
+                // 기존 방식으로 알림 전송
+                notificationService.sendNotificationToUser(
+                        request.getUserId(),
+                        request.getType(),
+                        request.getContent()
+                );
+            }
 
             return ResponseEntity.ok(Map.of("message", "알림 전송 완료"));
         } catch (Exception e) {

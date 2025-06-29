@@ -23,6 +23,16 @@ public interface NotificationService {
     void sendNotificationToUser(Long userId, String type, String content);
 
     /**
+     * 단일 사용자에게 알림 전송 (모임 ID 포함)
+     *
+     * @param userId  사용자 ID
+     * @param type    알림 타입
+     * @param content 알림 내용
+     * @param meetingId 모임 ID
+     */
+    void sendNotificationToUser(Long userId, String type, String content, Long meetingId);
+
+    /**
      * 여러 사용자에게 알림 전송 (FCM + DB 저장)
      *
      * @param userIds 사용자 ID 목록

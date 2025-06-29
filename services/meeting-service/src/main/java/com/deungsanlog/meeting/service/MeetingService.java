@@ -154,6 +154,7 @@ public class MeetingService {
                 req.put("userId", meeting.getHostUserId());
                 req.put("type", "meeting_apply");
                 req.put("content", "누군가가 [" + meeting.getTitle() + "] 모임에 참가신청을 했습니다.");
+                req.put("meetingId", meetingId);
                 notificationServiceClient.sendNotification(req);
             } catch (Exception e) {
                 // 알림 실패는 무시
@@ -196,6 +197,7 @@ public class MeetingService {
             }
             
             req.put("content", content);
+            req.put("meetingId", meetingId);
             notificationServiceClient.sendNotification(req);
         } catch (Exception e) {
             // 알림 실패는 무시
@@ -413,6 +415,7 @@ public class MeetingService {
                 req.put("userId", member.getUserId());
                 req.put("type", "meeting_full");
                 req.put("content", "[" + meeting.getTitle() + "] 모임의 구성이 완료되었습니다. 즐거운 모임되세요~");
+                req.put("meetingId", meeting.getId());
                 notificationServiceClient.sendNotification(req);
             } catch (Exception e) {
                 // 알림 실패는 무시
@@ -433,6 +436,7 @@ public class MeetingService {
                 req.put("userId", member.getUserId());
                 req.put("type", "meeting_closed");
                 req.put("content", "[" + meeting.getTitle() + "] 모임의 구성이 완료되었습니다. 즐거운 모임되세요~");
+                req.put("meetingId", meeting.getId());
                 notificationServiceClient.sendNotification(req);
             } catch (Exception e) {
                 // 알림 실패는 무시

@@ -65,6 +65,41 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional
     @Override
+    public void sendNotificationToUser(Long userId, String type, String content, Long meetingId) {
+        log.info("📨 단일 사용자 알림 전송 (모임 ID 포함): userId={}, type={}, meetingId={}", userId, type, meetingId);
+
+        try {
+            // 1. FCM 토큰 조회
+            String fcmToken = userServiceClient.getFcmToken(userId);
+
+            // 2. FCM 푸시 알림 전송 (토큰이 있는 경우에만)
+            if (fcmToken != null && !fcmToken.isBlank()) {
+                sendFcmMessage(fcmToken, getNotificationTitle(type), content);
+                log.info("📨 FCM 푸시 전송 완료: userId={}", userId);
+            } else {
+                log.warn("⚠️ FCM 토큰 없음 - DB 알림만 저장: userId={}", userId);
+            }
+
+            // 3. DB에 알림 저장 (모임 ID 포함)
+            saveNotificationToDb(userId, type, content, meetingId);
+            log.info("💾 DB 알림 저장 완료 (모임 ID 포함): userId={}, meetingId={}", userId, meetingId);
+
+        } catch (Exception e) {
+            log.error("❌ 알림 전송 실패: userId={}, error={}", userId, e.getMessage());
+
+            // FCM 실패해도 DB 알림은 저장 시도
+            try {
+                saveNotificationToDb(userId, type, content, meetingId);
+                log.info("💾 FCM 실패 후 DB 알림만 저장 (모임 ID 포함): userId={}, meetingId={}", userId, meetingId);
+            } catch (Exception dbError) {
+                log.error("❌ DB 알림 저장도 실패: userId={}", userId);
+                throw new RuntimeException("알림 저장 완전 실패", dbError);
+            }
+        }
+    }
+
+    @Transactional
+    @Override
     public void sendNotificationToUsers(List<Long> userIds, String type, String content) {
         log.info("📨 다중 사용자 알림 전송: 대상 {}명, type={}", userIds.size(), type);
 
@@ -193,6 +228,19 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.save(notification);
     }
 
+    private void saveNotificationToDb(Long userId, String type, String content, Long meetingId) {
+        Notification notification = Notification.builder()
+                .userId(userId)
+                .type(type)
+                .content(content)
+                .meetingId(meetingId)
+                .isRead(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        notificationRepository.save(notification);
+    }
+
     private String getNotificationTitle(String type) {
         return switch (type) {
             case "comment" -> "💬 새 댓글 알림";
@@ -200,6 +248,9 @@ public class NotificationServiceImpl implements NotificationService {
             case "fire_risk" -> "🔥 산불 위험 알림";
             case "weather_alert" -> "🌧️ 날씨 경보";
             case "meeting_apply" -> "👥 모임 참가신청";
+            case "meeting_accepted" -> "✅ 모임 참가 수락";
+            case "meeting_full" -> "🎯 모임 정원 마감";
+            case "meeting_closed" -> "🔒 모임 마감";
             case "system" -> "⚙️ 시스템 알림";
             default -> "📱 등산로그 알림";
         };
