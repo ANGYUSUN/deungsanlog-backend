@@ -1,2 +1,10 @@
 community:
   upload-path: C:/sw-project/deungsanlog-backend/services/community-service/uploads
+
+# 파일 업로드 크기 제한 설정 (매우 크게)
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 300MB
+      enabled: true
