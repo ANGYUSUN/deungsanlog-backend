@@ -44,18 +44,31 @@ public class FireRiskApiService {
      * 지역별 산불위험예보 조회 + 알림 발송
      */
     public Map<String, Object> getFireRiskInfo(String location) {
-        log.info("산불위험예보 조회 시작: location={}", location);
+        log.info("🔥 산불위험예보 조회 시작: location={}", location);
 
         try {
             // 산림청 API 호출
             Map<String, Object> apiResponse = callFireRiskApi();
 
             if (apiResponse == null) {
+                log.error("❌ API 응답이 null입니다");
                 return createErrorResponse("API 응답이 null입니다");
+            }
+
+            // 에러 응답인지 확인
+            if (apiResponse.containsKey("error") && (Boolean) apiResponse.get("error")) {
+                log.error("❌ API 호출 실패: {}", apiResponse.get("message"));
+                return apiResponse;
             }
 
             // 응답 파싱
             Map<String, Object> result = parseFireRiskResponse(apiResponse);
+
+            // 에러 응답인지 확인
+            if (result.containsKey("error") && (Boolean) result.get("error")) {
+                log.error("❌ 응답 파싱 실패: {}", result.get("message"));
+                return result;
+            }
 
             // 🔥 산불 위험도가 높을 때 알림 전송
             if (result.containsKey("riskLevelCode") && result.containsKey("success")) {
@@ -67,11 +80,11 @@ public class FireRiskApiService {
                 }
             }
 
-            log.info("산불위험예보 조회 성공: {}", result);
+            log.info("✅ 산불위험예보 조회 성공: {}", result);
             return result;
 
         } catch (Exception e) {
-            log.error("산불위험예보 조회 실패", e);
+            log.error("❌ 산불위험예보 조회 실패: {}", e.getMessage(), e);
             return createErrorResponse("산불위험예보 조회 실패: " + e.getMessage());
         }
     }
@@ -176,13 +189,24 @@ public class FireRiskApiService {
     // ========== 기존 메서드들 (변경 없음) ==========
 
     private Map<String, Object> callFireRiskApi() {
+        // API 키와 URL 검증
+        if (apiKey == null || apiKey.isEmpty() || apiKey.equals("${fire.api.key}")) {
+            log.error("❌ 산불 API 키가 설정되지 않았습니다. application-keys.yml 파일을 확인해주세요.");
+            return createErrorResponse("API 키가 설정되지 않았습니다");
+        }
+        
+        if (apiUrl == null || apiUrl.isEmpty() || apiUrl.equals("${fire.api.url}")) {
+            log.error("❌ 산불 API URL이 설정되지 않았습니다. application-keys.yml 파일을 확인해주세요.");
+            return createErrorResponse("API URL이 설정되지 않았습니다");
+        }
+
         String url = apiUrl +
                 "?serviceKey=" + apiKey +
                 "&pageNo=1" +
                 "&numOfRows=10" +
                 "&_type=json";
 
-        log.debug("산림청 API 호출: {}", url);
+        log.info("🔥 산림청 산불 API 호출 시작: {}", url.replace(apiKey, "***"));
 
         try {
             Map<String, Object> response = webClient.get()
@@ -191,40 +215,53 @@ public class FireRiskApiService {
                     .bodyToMono(Map.class)
                     .block();
 
+            if (response == null) {
+                log.error("❌ API 응답이 null입니다");
+                return createErrorResponse("API 응답이 null입니다");
+            }
+
+            log.info("✅ 산림청 API 호출 성공: 응답 키들 = {}", response.keySet());
             return response;
 
         } catch (Exception e) {
-            log.error("API 호출 실패: {}", e.getMessage(), e);
-            return null;
+            log.error("❌ 산림청 API 호출 실패: {}", e.getMessage(), e);
+            return createErrorResponse("API 호출 실패: " + e.getMessage());
         }
     }
 
     private Map<String, Object> parseFireRiskResponse(Map<String, Object> apiResponse) {
         try {
+            log.info("🔍 산불 API 응답 파싱 시작: 전체 응답 = {}", apiResponse);
+            
             Map<String, Object> response = (Map<String, Object>) apiResponse.get("response");
             if (response == null) {
+                log.error("❌ response 키가 없습니다. 전체 응답: {}", apiResponse);
                 return createErrorResponse("response 키가 없습니다");
             }
 
             Map<String, Object> body = (Map<String, Object>) response.get("body");
             if (body == null) {
+                log.error("❌ body 키가 없습니다. response: {}", response);
                 return createErrorResponse("body 키가 없습니다");
             }
 
             Map<String, Object> items = (Map<String, Object>) body.get("items");
             if (items == null) {
+                log.error("❌ items 키가 없습니다. body: {}", body);
                 return createErrorResponse("items 키가 없습니다");
             }
 
             Map<String, Object> item = (Map<String, Object>) items.get("item");
             if (item == null) {
+                log.error("❌ item 키가 없습니다. items: {}", items);
                 return createErrorResponse("산불위험예보 데이터가 없습니다");
             }
 
-            log.info("파싱할 item 데이터: {}", item);
+            log.info("✅ 파싱할 item 데이터: {}", item);
 
             Object meanAvgObj = item.get("meanavg");
             if (meanAvgObj == null) {
+                log.error("❌ meanavg 키가 없습니다. item: {}", item);
                 return createErrorResponse("위험도 데이터가 없습니다");
             }
 
@@ -243,11 +280,11 @@ public class FireRiskApiService {
             result.put("date", LocalDate.now().toString());
             result.put("success", true);
 
-            log.info("산불위험예보 파싱 완료: meanAvg={}, riskLevel={}", meanAvg, riskLevel);
+            log.info("✅ 산불위험예보 파싱 완료: meanAvg={}, riskLevel={}", meanAvg, riskLevel);
             return result;
 
         } catch (Exception e) {
-            log.error("산불위험예보 응답 파싱 실패", e);
+            log.error("❌ 산불위험예보 응답 파싱 실패: {}", e.getMessage(), e);
             return createErrorResponse("산불위험예보 데이터 파싱 실패: " + e.getMessage());
         }
     }
