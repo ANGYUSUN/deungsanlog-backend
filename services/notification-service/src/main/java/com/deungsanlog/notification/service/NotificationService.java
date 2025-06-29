@@ -60,4 +60,9 @@ public interface NotificationService {
      * 사용자의 읽지 않은 알림 개수 조회
      */
     long getUnreadCount(Long userId);
+
+    /**
+     * 사용자의 모든 알림을 읽음으로 표시
+     */
+    void markAllAsRead(Long userId);
 }

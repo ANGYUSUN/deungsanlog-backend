@@ -143,6 +143,20 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.countByUserIdAndIsReadFalse(userId);
     }
 
+    @Transactional
+    @Override
+    public void markAllAsRead(Long userId) {
+        log.info("✅ 모든 알림 읽음 처리: userId={}", userId);
+
+        try {
+            int updatedCount = notificationRepository.markAllAsReadByUserId(userId);
+            log.info("✅ 모든 알림 읽음 처리 완료: userId={}, updatedCount={}", userId, updatedCount);
+        } catch (Exception e) {
+            log.error("❌ 모든 알림 읽음 처리 실패: userId={}", userId, e);
+            throw new RuntimeException("모든 알림 읽음 처리 실패", e);
+        }
+    }
+
     // ========== 🔧 Private 헬퍼 메서드들 ==========
 
     private void sendFcmMessage(String fcmToken, String title, String body) {

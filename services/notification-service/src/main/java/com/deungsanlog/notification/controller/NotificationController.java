@@ -199,6 +199,27 @@ public class NotificationController {
     }
 
     /**
+     * 모든 알림 읽음 처리
+     * PUT /api/notifications/read-all
+     */
+    @PutMapping("/read-all")
+    public ResponseEntity<?> markAllNotificationsAsRead(
+            @RequestHeader("X-AUTH-TOKEN") String authToken) {
+
+        Long userId = extractUserIdFromJWT(authToken);
+        if (userId == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "JWT 토큰이 유효하지 않습니다"));
+        }
+
+        try {
+            notificationService.markAllAsRead(userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
      * 알림 삭제
      * DELETE /api/notifications/{id}
      */
