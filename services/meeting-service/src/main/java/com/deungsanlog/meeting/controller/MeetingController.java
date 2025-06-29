@@ -138,4 +138,44 @@ public class MeetingController {
     public ResponseEntity<?> getMyMeetingIds(@RequestParam Long userId) {
         return ResponseEntity.ok(meetingService.getAcceptedMeetingIdsByUserId(userId));
     }
+
+    // userId가 개설한 meetingId 리스트 반환
+    @GetMapping("/my-hosted-meeting-ids")
+    public ResponseEntity<?> getMyHostedMeetingIds(@RequestParam Long userId) {
+        return ResponseEntity.ok(meetingService.getHostedMeetingIdsByUserId(userId));
+    }
+
+    // userId가 참여한 모임을 상태별로 필터링
+    @GetMapping("/my-meeting-ids-by-status")
+    public ResponseEntity<?> getMyMeetingIdsByStatus(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "all") String status
+    ) {
+        return ResponseEntity.ok(meetingService.getMeetingIdsByUserIdAndStatus(userId, status));
+    }
+
+    // userId가 개설한 모임을 상태별로 필터링
+    @GetMapping("/my-hosted-meeting-ids-by-status")
+    public ResponseEntity<?> getMyHostedMeetingIdsByStatus(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "all") String status
+    ) {
+        return ResponseEntity.ok(meetingService.getHostedMeetingIdsByUserIdAndStatus(userId, status));
+    }
+
+    // 내 모임 조회 (상태, 정렬, 날짜 필터링 포함)
+    @GetMapping("/my-meetings-filtered")
+    public ResponseEntity<?> getMyMeetingsFiltered(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "participated") String type, // participated 또는 hosted
+            @RequestParam(defaultValue = "all") String status,
+            @RequestParam(defaultValue = "latest") String sort, // latest, oldest, deadline
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        var result = meetingService.getMyMeetingsFiltered(userId, type, status, sort, startDate, endDate, page, size);
+        return ResponseEntity.ok(result);
+    }
 }

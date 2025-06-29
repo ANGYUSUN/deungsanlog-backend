@@ -34,6 +34,19 @@ public class Notification {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    // 관련 ID 필드들 (선택사항)
+    @Column(name = "meeting_id")
+    private Long meetingId;
+
+    @Column(name = "post_id")
+    private Long postId;
+
+    @Column(name = "mountain_id")
+    private Long mountainId;
+
+    @Column(name = "related_user_id")
+    private Long relatedUserId;
+
     @PrePersist
     public void prePersist() {
         if (createdAt == null) {

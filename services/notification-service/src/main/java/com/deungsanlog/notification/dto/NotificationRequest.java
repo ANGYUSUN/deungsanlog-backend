@@ -18,4 +18,10 @@ public class NotificationRequest {
     private String type;        // "comment", "like", "system", etc.
     private String content;     // 알림 내용
     private String title;       // 알림 제목 (선택사항)
+    
+    // 관련 ID 필드들 (선택사항)
+    private Long meetingId;     // 모임 ID
+    private Long postId;        // 게시글 ID
+    private Long mountainId;    // 산 ID
+    private Long relatedUserId; // 관련 사용자 ID
 }

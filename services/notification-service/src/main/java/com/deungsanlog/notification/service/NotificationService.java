@@ -23,6 +23,16 @@ public interface NotificationService {
     void sendNotificationToUser(Long userId, String type, String content);
 
     /**
+     * 단일 사용자에게 알림 전송 (모임 ID 포함)
+     *
+     * @param userId  사용자 ID
+     * @param type    알림 타입
+     * @param content 알림 내용
+     * @param meetingId 모임 ID
+     */
+    void sendNotificationToUser(Long userId, String type, String content, Long meetingId);
+
+    /**
      * 여러 사용자에게 알림 전송 (FCM + DB 저장)
      *
      * @param userIds 사용자 ID 목록
@@ -60,4 +70,9 @@ public interface NotificationService {
      * 사용자의 읽지 않은 알림 개수 조회
      */
     long getUnreadCount(Long userId);
+
+    /**
+     * 사용자의 모든 알림을 읽음으로 표시
+     */
+    void markAllAsRead(Long userId);
 }
