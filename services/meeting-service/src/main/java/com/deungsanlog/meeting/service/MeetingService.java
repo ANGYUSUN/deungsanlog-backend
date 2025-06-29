@@ -7,6 +7,7 @@ import com.deungsanlog.meeting.entity.MeetingStatus;
 import com.deungsanlog.meeting.exception.BadRequestException;
 import com.deungsanlog.meeting.repository.MeetingMemberRepository;
 import com.deungsanlog.meeting.repository.MeetingRepository;
+import com.deungsanlog.meeting.client.NotificationServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class MeetingService {
 
     private final MeetingRepository meetingRepository;
     private final MeetingMemberRepository meetingMemberRepository;
+    private final NotificationServiceClient notificationServiceClient;
 
     public Meeting saveMeeting(MeetingRequestDto dto) {
         Meeting meeting = Meeting.builder()
@@ -141,6 +144,16 @@ public class MeetingService {
                     .status(MeetingMember.Status.PENDING)
                     .build();
             meetingMemberRepository.save(newMember);
+            // 알림 전송
+            try {
+                HashMap<String, Object> req = new HashMap<>();
+                req.put("userId", meeting.getHostUserId());
+                req.put("type", "meeting_apply");
+                req.put("content", "누군가가 [" + meeting.getTitle() + "] 모임에 참가신청을 했습니다.");
+                notificationServiceClient.sendNotification(req);
+            } catch (Exception e) {
+                // 알림 실패는 무시
+            }
         } else if (member.getStatus() == MeetingMember.Status.REJECTED || member.getStatus() == MeetingMember.Status.CANCELLED) {
             // 재신청
             member.setStatus(MeetingMember.Status.PENDING);

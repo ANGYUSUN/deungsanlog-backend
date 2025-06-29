@@ -185,6 +185,7 @@ public class NotificationServiceImpl implements NotificationService {
             case "like" -> "❤️ 좋아요 알림";
             case "fire_risk" -> "🔥 산불 위험 알림";
             case "weather_alert" -> "🌧️ 날씨 경보";
+            case "meeting_apply" -> "👥 모임 참가신청";
             case "system" -> "⚙️ 시스템 알림";
             default -> "📱 등산로그 알림";
         };
