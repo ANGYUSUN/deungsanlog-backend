@@ -17,6 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.Map;
+import java.util.Comparator;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -254,5 +258,122 @@ public class MeetingService {
                 .map(MeetingMember::getMeetingId)
                 .distinct()
                 .toList();
+    }
+
+    public List<Long> getHostedMeetingIdsByUserId(Long userId) {
+        return meetingRepository.findByHostUserId(userId)
+                .stream()
+                .map(Meeting::getId)
+                .toList();
+    }
+
+    public List<Long> getMeetingIdsByUserIdAndStatus(Long userId, String status) {
+        if ("all".equalsIgnoreCase(status)) {
+            return getAcceptedMeetingIdsByUserId(userId);
+        }
+        
+        MeetingStatus meetingStatus = MeetingStatus.valueOf(status.toUpperCase());
+        return meetingMemberRepository.findByUserIdAndStatus(userId, MeetingMember.Status.ACCEPTED)
+                .stream()
+                .map(MeetingMember::getMeetingId)
+                .distinct()
+                .map(meetingRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(meeting -> meeting.getStatus() == meetingStatus)
+                .map(Meeting::getId)
+                .toList();
+    }
+
+    public List<Long> getHostedMeetingIdsByUserIdAndStatus(Long userId, String status) {
+        if ("all".equalsIgnoreCase(status)) {
+            return getHostedMeetingIdsByUserId(userId);
+        }
+        
+        MeetingStatus meetingStatus = MeetingStatus.valueOf(status.toUpperCase());
+        return meetingRepository.findByHostUserId(userId)
+                .stream()
+                .filter(meeting -> meeting.getStatus() == meetingStatus)
+                .map(Meeting::getId)
+                .toList();
+    }
+
+    public Map<String, Object> getMyMeetingsFiltered(Long userId, String type, String status, String sort, 
+                                                   String startDate, String endDate, int page, int size) {
+        // 1. 모임 ID 목록 가져오기
+        List<Long> meetingIds;
+        if ("hosted".equals(type)) {
+            meetingIds = getHostedMeetingIdsByUserIdAndStatus(userId, status);
+        } else {
+            meetingIds = getMeetingIdsByUserIdAndStatus(userId, status);
+        }
+
+        if (meetingIds.isEmpty()) {
+            return Map.of(
+                "meetings", List.of(),
+                "totalElements", 0L,
+                "totalPages", 0,
+                "currentPage", page,
+                "size", size
+            );
+        }
+
+        // 2. 모임 상세 정보 가져오기
+        List<Meeting> meetings = meetingRepository.findAllById(meetingIds);
+
+        // 3. 날짜 필터링
+        if (startDate != null && !startDate.isEmpty()) {
+            LocalDate start = LocalDate.parse(startDate);
+            meetings = meetings.stream()
+                    .filter(meeting -> meeting.getScheduledDate().isAfter(start.minusDays(1)))
+                    .toList();
+        }
+
+        if (endDate != null && !endDate.isEmpty()) {
+            LocalDate end = LocalDate.parse(endDate);
+            meetings = meetings.stream()
+                    .filter(meeting -> meeting.getScheduledDate().isBefore(end.plusDays(1)))
+                    .toList();
+        }
+
+        // 4. 정렬
+        switch (sort) {
+            case "oldest":
+                meetings = meetings.stream()
+                        .sorted(Comparator.comparing(Meeting::getScheduledDate)
+                                .thenComparing(Meeting::getScheduledTime))
+                        .toList();
+                break;
+            case "deadline":
+                meetings = meetings.stream()
+                        .sorted(Comparator.comparing(Meeting::getDeadlineDate))
+                        .toList();
+                break;
+            case "latest":
+            default:
+                meetings = meetings.stream()
+                        .sorted(Comparator.comparing(Meeting::getScheduledDate)
+                                .thenComparing(Meeting::getScheduledTime)
+                                .reversed())
+                        .toList();
+                break;
+        }
+
+        // 5. 페이지네이션
+        int totalElements = meetings.size();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        int startIndex = page * size;
+        int endIndex = Math.min(startIndex + size, totalElements);
+        
+        List<Meeting> pagedMeetings = startIndex < totalElements ? 
+                meetings.subList(startIndex, endIndex) : List.of();
+
+        return Map.of(
+            "meetings", pagedMeetings,
+            "totalElements", (long) totalElements,
+            "totalPages", totalPages,
+            "currentPage", page,
+            "size", size
+        );
     }
 }
