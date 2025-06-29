@@ -23,6 +23,16 @@ public interface NotificationService {
     void sendNotificationToUser(Long userId, String type, String content);
 
     /**
+     * 단일 사용자에게 알림 전송 (게시글 ID 포함)
+     *
+     * @param userId  사용자 ID
+     * @param type    알림 타입
+     * @param content 알림 내용
+     * @param postId  게시글 ID
+     */
+    void sendNotificationToUserWithPostId(Long userId, String type, String content, Long postId);
+
+    /**
      * 단일 사용자에게 알림 전송 (모임 ID 포함)
      *
      * @param userId  사용자 ID

@@ -14,4 +14,5 @@ public class NotificationRequest {
     private String type;        // "comment", "like"
     private String content;     // 알림 내용
     private String title;       // 알림 제목 (선택사항)
+    private Long postId;        // 게시글 ID (댓글/좋아요 알림용)
 }

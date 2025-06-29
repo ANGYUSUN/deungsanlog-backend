@@ -71,14 +71,26 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
                                 : post.getTitle());
             }
 
-            notificationServiceClient.sendNotification(
-                    NotificationRequest.builder()
-                            .userId(post.getUserId())  // 게시글 작성자에게 알림 (자기 자신 포함)
-                            .type("comment")
-                            .title(title)
-                            .content(content)
-                            .build()
-            );
+            // 디버깅: postId 확인
+            log.info("🔍 댓글 알림 전송 전 postId 확인: postId={}, post.getId()={}", post.getId(), post.getId());
+
+            NotificationRequest notificationRequest = NotificationRequest.builder()
+                    .userId(post.getUserId())  // 게시글 작성자에게 알림 (자기 자신 포함)
+                    .type("comment")
+                    .title(title)
+                    .content(content)
+                    .postId(post.getId())  // postId 추가
+                    .build();
+
+            // 디버깅: NotificationRequest 객체 확인
+            log.info("🔍 NotificationRequest 객체 상세: userId={}, type={}, content={}, title={}, postId={}", 
+                    notificationRequest.getUserId(), 
+                    notificationRequest.getType(), 
+                    notificationRequest.getContent(), 
+                    notificationRequest.getTitle(), 
+                    notificationRequest.getPostId());
+
+            notificationServiceClient.sendNotification(notificationRequest);
 
             log.info("✅ 댓글 알림 전송 완료: postId={}, postAuthor={}, commenter={}",
                     post.getId(), post.getUserId(), commenterId);
