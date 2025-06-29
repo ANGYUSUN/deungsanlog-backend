@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: dev  # 개발 시에는 dev, 배포 시에는 prod 로 바꿈
+    include: keys
+
+  config:
+    import: "optional:application-keys.yml"
+
+logging:
+  file:
+    name: logs/gateway-service.log./
+    path: logs
+
+logging.level:
+  org.springframework.cloud.gateway: DEBUG
+  org.springframework.web.reactive: DEBUG
+
+server:
+  address: 0.0.0.0

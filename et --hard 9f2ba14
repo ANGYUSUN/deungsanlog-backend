@@ -1,0 +1,1221 @@
+[33mcommit 37cbf77c1cbdd23dff1961d06d01c55449b25b09[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/meeting-service/get[m[33m)[m
+Merge: 9f2ba14 f2913b4
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 18:07:00 2025 +0900
+
+    Merge branch 'develop' of https://github.com/Team0ops/deungsanlog-backend into feature/meeting-service/get
+
+[33mcommit f2913b43923f3f2db1a65f02c957c1fae1365957[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m
+Merge: cecbc5b 164d288
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 17:49:22 2025 +0900
+
+    Merge pull request #39 from Team0ops/fix/user-service/login
+    
+    login fix
+
+[33mcommit 9f2ba14c365fafcb143ac9f2a8b28e331e181876[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 17:48:54 2025 +0900
+
+    feat: 목록 조회 구체화
+
+[33mcommit 164d288f3e7855d0fbd563ba977e8f50e19b9038[m[33m ([m[1;31morigin/fix/user-service/login[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Fri Jun 27 17:03:25 2025 +0900
+
+    login fix
+
+[33mcommit 71dc0bf58a25d94491013eeb1b97d2d1be62283f[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 16:20:09 2025 +0900
+
+    fix: joinedAt 관련 오류 해결
+
+[33mcommit 2ad75b323e4d1a2a1a52f496b7792f3e5f9fd944[m[33m ([m[1;31morigin/feature/meeting-service/get[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 15:44:19 2025 +0900
+
+    fix: error
+
+[33mcommit 268786ef5ab178d8dca0fb33eb72069173be1bf5[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 15:39:14 2025 +0900
+
+    feat: 모임 취소 API 구현
+
+[33mcommit f8ff8111dd3fa8c00780219ce955df95adcdd230[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 15:29:02 2025 +0900
+
+    feat: 모임원 목록 조회
+
+[33mcommit f722787c1ea8e342d8ecd8190c4077bd0bb30610[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 15:28:14 2025 +0900
+
+    feat: 모임원 거절 API 구현
+
+[33mcommit 22bf803bddabc8de190bf3414cb320fe6d97558f[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 15:26:51 2025 +0900
+
+    feat: 모임원 수락 API 구현
+
+[33mcommit e5a6c5d4fd4b3a0deb8115ebcd78ef0bd1c64712[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 15:26:19 2025 +0900
+
+    feat: 모임 신청 API 구현
+
+[33mcommit cecbc5ba2a82becc19c823f126d8fc442569b261[m
+Merge: 08fb2b6 9610990
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 15:18:39 2025 +0900
+
+    Merge pull request #37 from Team0ops/feature/community-service/post
+    
+    feat: totalPage 반환 추가
+
+[33mcommit 9610990175cb78884853173ca68a767b48e8ba49[m[33m ([m[1;31morigin/feature/community-service/post[m[33m)[m
+Merge: 5aa198b 08fb2b6
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 15:18:27 2025 +0900
+
+    Merge branch 'develop' into feature/community-service/post
+
+[33mcommit 97d1cb63b1570c33ea3cf51fb0dbf966153f475b[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 14:52:17 2025 +0900
+
+    feat: Member Status 구체화
+
+[33mcommit 04132c9fa43180407724f586b4fe198abb8c618a[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 27 14:52:04 2025 +0900
+
+    feat: 모임 상세 조회 API 구현
+
+[33mcommit 08fb2b6565443a2a142b300e7fa37ac27dd4081f[m
+Merge: 13737f5 6662ef7
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Fri Jun 27 14:31:46 2025 +0900
+
+    Merge pull request #38 from Team0ops/feature/gateway-service/loginsupplement
+    
+    loginsuccess
+
+[33mcommit 13737f511de2a3deff3d751282e005b0aabd98e1[m
+Merge: 7d24d6a 2fc9f1b
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Fri Jun 27 14:31:11 2025 +0900
+
+    Merge pull request #36 from Team0ops/fix/community-service/search
+    
+    fix: 게시글 전체 검색 시 오류 수정
+
+[33mcommit 6662ef74e1c7bdfbaef9a4e01d22f8e32ce3a934[m[33m ([m[1;31morigin/feature/gateway-service/loginsupplement[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Fri Jun 27 00:03:23 2025 +0900
+
+    loginsuccess
+
+[33mcommit 5aa198b253cdde3687cf1030c7a012c296cd14a7[m[33m ([m[1;32mfeature/community-service/post[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 26 23:36:37 2025 +0900
+
+    feat: totalPage 반환 추가
+
+[33mcommit 2fc9f1b111b23b47b7dcdd5b31357789559d99f9[m[33m ([m[1;31morigin/fix/community-service/search[m[33m, [m[1;32mfix/community-service/search[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 26 23:06:01 2025 +0900
+
+    fix: 게시글 전체 검색 시 오류 수정
+
+[33mcommit 7d24d6a975041fb33c5a284f6b42b137daee808e[m
+Merge: af363ae 1e2c318
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 26 22:45:55 2025 +0900
+
+    Merge pull request #35 from Team0ops/feature/config/env-based-resource-handler
+    
+    Feature/config/env based resource handler
+
+[33mcommit 1e2c318e97c1961faa029f2ea74816ba81e32965[m[33m ([m[1;31morigin/feature/config/env-based-resource-handler[m[33m, [m[1;32mfeature/config/env-based-resource-handler[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 26 22:45:29 2025 +0900
+
+    feat: 이미지 저장 url local/prod 분기 처리
+
+[33mcommit ffba0b7131df936ea42837275a561869bc89463a[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 26 22:17:26 2025 +0900
+
+    feat: 이미지 저장 url local/prod 분기 처리
+
+[33mcommit af363aedbc9697c201d358f00cdffedc7c59e82f[m
+Merge: 63ad5fa eced3e5
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 26 21:03:33 2025 +0900
+
+    Merge pull request #34 from Team0ops/feature/config/env-based-resource-handler
+    
+    feat(config): 환경(profile)에 따라 ResourceHandler 경로 분기 처리
+
+[33mcommit eced3e55032dff08167164d6f3ffc847010c6997[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 26 21:02:57 2025 +0900
+
+    feat(config): 환경(profile)에 따라 ResourceHandler 경로 분기 처리
+
+[33mcommit 63ad5fa9fa2239fbb6187ac2a287f7b22674d52b[m
+Merge: 61b6f7b 6b93861
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 25 23:17:00 2025 +0900
+
+    Merge pull request #33 from Team0ops/feature/community-service/my
+    
+    feat: 나의 게시물 반환 API 부분 totalPage 추가
+
+[33mcommit 6b938610851b6c4882c08764d1dbc13961397720[m[33m ([m[1;31morigin/feature/community-service/my[m[33m, [m[1;32mfeature/community-service/my[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 25 23:16:28 2025 +0900
+
+    feat: 나의 게시물 반환 API 부분 totalPage 추가
+
+[33mcommit 61b6f7b725d336c65e740087515a40fca0719876[m
+Merge: 778ba19 6051656
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 25 21:41:22 2025 +0900
+
+    Merge pull request #32 from Team0ops/feature/community-service/my
+    
+    feat: 특정 사용자가 작성한 게시글 목록 조회 API 추가
+
+[33mcommit 605165639348fd0db125f945646f96f32b45e3f2[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 25 21:40:54 2025 +0900
+
+    feat: 특정 사용자가 작성한 게시글 목록 조회 API 추가
+
+[33mcommit 778ba1996ce1c1afe88fa7d540fa07bdd9df1472[m
+Merge: ec80965 f01516d
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 25 19:35:41 2025 +0900
+
+    Merge pull request #31 from Team0ops/fix/error
+    
+    fix: 로컬 개발환경 주소 추가
+
+[33mcommit f01516d8c751592a38eee1fbba1bd96acf35410d[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 25 19:35:08 2025 +0900
+
+    fix: 로컬 개발환경 주소 추가
+
+[33mcommit ec80965032425e52d35b1b8c33ab522f8d1e6eac[m
+Merge: 8150549 400b227
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 25 14:03:03 2025 +0900
+
+    Merge pull request #30 from Team0ops/feature/community-service/post
+    
+    feat: 게시물 검색 기능 구현
+
+[33mcommit 400b2277d68c173ae4fa267cd2965badccbf03c0[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 11:36:01 2025 +0900
+
+    feat: 게시물 검색 기능 구현
+
+[33mcommit 815054980fd81d5f1e228f7d7661f67636cc9b8a[m
+Merge: 77a912f d82f0b2
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Tue Jun 24 11:07:58 2025 +0900
+
+    Merge pull request #29 from Team0ops/feature/gateway-service/supplement
+    
+    0624 login
+
+[33mcommit d82f0b2e0b5ec8aae283f6c58abb96320477ca79[m[33m ([m[1;31morigin/feature/gateway-service/supplement[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Tue Jun 24 11:06:57 2025 +0900
+
+    0624 login
+
+[33mcommit 77a912f79a2d3a1d8d73e71b80d0d4fb4cd96620[m
+Merge: 7bb234a e7eb57d
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 10:23:08 2025 +0900
+
+    Merge pull request #28 from Team0ops/feature/record-service/paging
+    
+    feat: 기록 서비스 페이징 처리
+
+[33mcommit e7eb57d830b23ad01a60d66ab5aa27d754efd6bc[m[33m ([m[1;31morigin/feature/record-service/paging[m[33m, [m[1;32mfeature/record-service/paging[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 09:33:34 2025 +0900
+
+    feat: 기록 서비스 페이징 처리
+
+[33mcommit 7bb234acdbd86e09f9934332a4ba3d942644ab30[m
+Merge: 57e3c96 c9aae16
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 02:01:45 2025 +0900
+
+    Merge pull request #27 from Team0ops/refactor/gateway-service/setting
+    
+    Refactor/gateway service/setting
+
+[33mcommit c9aae169ea6c00f402397f03b11ed877d43875ac[m[33m ([m[1;31morigin/refactor/gateway-service/setting[m[33m, [m[1;32mrefactor/gateway-service/setting[m[33m)[m
+Merge: a088293 28a8cf6
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 02:00:07 2025 +0900
+
+    Merge branch 'release/test' of https://github.com/Team0ops/deungsanlog-backend into refactor/gateway-service/setting
+    # Please enter a commit message to explain why this merge is necessary,
+    # especially if it merges an updated upstream into a topic branch.
+    #
+    # Lines starting with '#' will be ignored, and an empty message aborts
+    # the commit.
+
+[33mcommit 28a8cf6609cdc3276ffa2f5869739a29987005f0[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 01:58:40 2025 +0900
+
+    feat: 카카오 추가
+
+[33mcommit 57e3c96c8bbaf918f828288bbb9b77842c74cd75[m
+Merge: 0f1e47a a088293
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 01:21:08 2025 +0900
+
+    Merge pull request #26 from Team0ops/refactor/gateway-service/setting
+    
+    Refactor/gateway service/setting
+
+[33mcommit a08829363d1387b16b2493090f4494763943c7e3[m
+Merge: e4c21c7 d18c410
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 01:19:38 2025 +0900
+
+    Merge branch 'release/test' of https://github.com/Team0ops/deungsanlog-backend into refactor/gateway-service/setting
+    
+    # Conflicts:
+    #       infrastructure/gateway-server/src/main/java/com/deungsanlog/gateway/controller/AuthController.java
+    #       infrastructure/gateway-server/src/main/resources/application.properties
+
+[33mcommit d18c4104196295fad723514e445680e6a08d7c2a[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 01:04:18 2025 +0900
+
+    feat: 도메인 적용
+
+[33mcommit d738ff9c2b3242e7456ebb22224eea0df7bacc33[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 24 01:04:02 2025 +0900
+
+    chore: 불필요 코드 삭제
+
+[33mcommit 0f1e47a4f335a6e6ade73218297c0ff867bd8268[m
+Merge: e4c21c7 a01ccd9
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Tue Jun 24 00:00:19 2025 +0900
+
+    Merge pull request #25 from Team0ops/feature/mountain-service/mappings
+    
+    jwt logic change
+
+[33mcommit a01ccd97f4c439f82ab1146c573b7c92719474ec[m[33m ([m[1;31morigin/feature/mountain-service/mappings[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Mon Jun 23 23:25:55 2025 +0900
+
+    jwt logic change
+
+[33mcommit e4c21c7b32544320de064792825dd5a2fbc7bb9b[m
+Merge: f28dcfe 076a6e7
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 23 13:08:24 2025 +0900
+
+    Merge pull request #24 from Team0ops/feature/meeting-service/create
+    
+    Feature/meeting service/create
+
+[33mcommit 076a6e7d5e6eec2d883d79dab9a04eb4fd29064f[m[33m ([m[1;31morigin/feature/meeting-service/create[m[33m, [m[1;32mfeature/meeting-service/create[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 23 11:23:07 2025 +0900
+
+    chore: 불필요 코드 삭제
+
+[33mcommit c72797a83ca223320767aaeae051d94027fb8c84[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 23 11:22:35 2025 +0900
+
+    fix: 검색 시 status 누락 오류 해결
+
+[33mcommit 9d18d96ba3f00a409b0863b5c9d2412594d4fc8a[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 23 01:22:22 2025 +0900
+
+    feat: mountain_name 컬럼 추가
+
+[33mcommit 6ace45c2840443bd1e859641badcfca42c639ec5[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 22 23:33:59 2025 +0900
+
+    feat: 모임 목록 조회 및 멤버 조회 API 구현
+
+[33mcommit d745f2afcbc52f68e198ca8e06b06f26e51d2e3d[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 22 22:44:04 2025 +0900
+
+    feat: 모임 생성 구현
+
+[33mcommit f28dcfea0db50dc0c5b19a9eadcc83a62abc3e7d[m
+Merge: 59f31ee 2c34efe
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 22 16:35:56 2025 +0900
+
+    Merge pull request #23 from Team0ops/feature/user-service/kakao
+    
+    kakao login
+
+[33mcommit 5bb6537e4eeaa59aa523facd143195a48f748490[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 22 12:53:58 2025 +0900
+
+    feat: 배포로 변경
+
+[33mcommit 1a6c2e1db3e301c17e4846645790556bc0bc16a9[m
+Merge: 3e058b8 59f31ee
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 21 23:33:30 2025 +0900
+
+    Merge branch 'develop' of https://github.com/Team0ops/deungsanlog-backend into release/test
+
+[33mcommit 3e058b823e2523a566d29c8744b489c54c764466[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 21 23:32:32 2025 +0900
+
+    feat: 배포로 변경
+
+[33mcommit a446ccfcef4d13d72f52410715a1689a90958381[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 21 23:32:11 2025 +0900
+
+    feat: cor 중복으로 설정 제거
+
+[33mcommit bafb9f624426ac92164bdb8dd2b6a6ab2b3e4e71[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 21 23:31:29 2025 +0900
+
+    feat: 배포 주소 설정
+
+[33mcommit 2c34efe38e19a2591b3a7bd434c01ee0e0dc0824[m[33m ([m[1;31morigin/feature/user-service/kakao[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Fri Jun 20 16:28:55 2025 +0900
+
+    kakao login
+
+[33mcommit 4fe1f13923162fc76ad7a2a0cd978bb5b3adf391[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Fri Jun 20 16:26:11 2025 +0900
+
+    feat: 배포 준비
+
+[33mcommit 59f31ee7eeb8a2c6ffd2aa5807c29e62acfe20c2[m
+Merge: cc964f7 2c2eda3
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Fri Jun 20 15:30:07 2025 +0900
+
+    Merge pull request #22 from Team0ops/feature/user-service/supplement
+    
+    0620 수정
+
+[33mcommit 2c2eda345057a296c521fefd34a75c83044efc45[m[33m ([m[1;31morigin/feature/user-service/supplement[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Fri Jun 20 14:19:07 2025 +0900
+
+    0620 수정
+
+[33mcommit cc964f7c3c08f9bd2ec00a8fd544f6583e2d0776[m[33m ([m[1;32mfeature/community-service/meeting[m[33m)[m
+Merge: f486c26 241a610
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 18 14:08:10 2025 +0900
+
+    Merge pull request #21 from Team0ops/feature/community-service/board
+    
+    Feature/community service/board
+
+[33mcommit 241a61010ac0307fad6ca21bd6e6f55694cdae9e[m[33m ([m[1;31morigin/feature/community-service/board[m[33m, [m[1;32mfeature/community-service/board[m[33m)[m
+Merge: b1f317e f486c26
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 18 14:07:11 2025 +0900
+
+    Merge branch 'develop' of https://github.com/Team0ops/deungsanlog-backend into feature/community-service/board
+    # Please enter a commit message to explain why this merge is necessary,
+    # especially if it merges an updated upstream into a topic branch.
+    #
+    # Lines starting with '#' will be ignored, and an empty message aborts
+    # the commit.
+
+[33mcommit b1f317ed3f8fdba58f7dba843487f5cbe09ff452[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 18 14:05:45 2025 +0900
+
+    feat: 이미지
+
+[33mcommit f486c2678115007f4fe52a1fdb8ef96430f254e4[m
+Merge: ce605b3 3fe1f43
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 18 14:04:25 2025 +0900
+
+    Merge pull request #20 from Team0ops/feature/mountain-service/mapping
+    
+    0617 멘토링받았을때까지의 내용
+
+[33mcommit 3fe1f4316304fe531e119509e3f928d3a9415f38[m[33m ([m[1;31morigin/feature/mountain-service/mapping[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Wed Jun 18 13:59:28 2025 +0900
+
+    mapping
+
+[33mcommit f326979c8f07d91e19e6af181ca978fef07c91d6[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 17 00:48:25 2025 +0900
+
+    fix: NullPoint 발생 에러 수정
+
+[33mcommit ce605b3012e354775c3286868f3e3dbaca9269da[m
+Merge: eb28ea7 27a28c6
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 22:38:26 2025 +0900
+
+    Merge pull request #19 from Team0ops/feature/user-service/mypage
+    
+    update usercontroller and userservice
+
+[33mcommit 27a28c6ca1f4906ef26f59f75a88838d2099a5de[m[33m ([m[1;31morigin/feature/user-service/mypage[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Mon Jun 16 22:36:18 2025 +0900
+
+    update usercontroller and userservice
+
+[33mcommit eb28ea787946e636d9e5f020ce63960fe3d7bc7d[m
+Merge: 0d3c157 b198c9b
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 22:08:12 2025 +0900
+
+    Merge pull request #18 from Team0ops/feature/community-service/board
+    
+    Feature/community service/board
+
+[33mcommit b198c9b676baae91cf29e1214d718b5a5ce993ed[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 22:05:09 2025 +0900
+
+    fix: 누락 컬럼 추가
+
+[33mcommit 846d0054c3725d5483d002845f979c823a8f1611[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 21:42:54 2025 +0900
+
+    feat: islike 조회 구현
+
+[33mcommit c6de342d8a62c6d72f195e5dbc76758a0b771d90[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 20:38:52 2025 +0900
+
+    feat: 댓글 기능 구현
+
+[33mcommit 9ddcda42920e5ab221391011437b58d40be97313[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 20:38:46 2025 +0900
+
+    feat: 댓글 기능 구현
+
+[33mcommit ece75fe10936e7fed0ade9d653e193706bff7d67[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 20:38:28 2025 +0900
+
+    chore: 불필요 코드 삭제
+
+[33mcommit ac9f948a3bc523dddb696ee149ce4217b4a00b53[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 16:36:03 2025 +0900
+
+    feat: 최근 게시물 조회 기능 구현
+
+[33mcommit 99ee2ce883028f63c5ef4d68cfabbedf4c5d9d5c[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 16:24:02 2025 +0900
+
+    fix: Hikari 커넥션 풀 설정 추가로 커넥션 누수 방지
+
+[33mcommit 667bfcd7c924c8c99d7545466f9612514d13703d[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 16 14:05:25 2025 +0900
+
+    feat: 게시물 좋아요 기능 구현
+
+[33mcommit dd5b3e7393089309bd77aa99127b6723f4718e50[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 23:35:48 2025 +0900
+
+    feat: 게시물 삭제 기능 구현
+
+[33mcommit bda4f3174d9bd8dadf09b317eabe48249de5dda9[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 22:55:45 2025 +0900
+
+    feat: image 매핑 경로 수정
+
+[33mcommit 17eb04042c13c0e4680781530dd2ed99729153ae[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 22:35:00 2025 +0900
+
+    feat: id -> name 반환 컨트롤러 추가
+
+[33mcommit a8c8ff4c9a0bd4c4455b2b0f79555388716afc6f[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 21:41:18 2025 +0900
+
+    feat: 커뮤니티 서비스 경로 설정
+
+[33mcommit 1d1c59d7fa7fee3e32ac8d7a8f0265a82de7fdb4[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 21:40:50 2025 +0900
+
+    feat: 자유게시판 게시물 post/get 구현
+
+[33mcommit 0d3c157079cf47a484eba7e0d9419570df52af06[m
+Merge: a268540 4845f44
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 05:04:26 2025 +0900
+
+    Merge pull request #17 from Team0ops/feature/record-service/hot-mountain
+    
+    Feature/record service/hot mountain
+
+[33mcommit 4845f4459f8bfc153b944036afd298f3bb4f72e6[m[33m ([m[1;31morigin/feature/record-service/hot-mountain[m[33m, [m[1;32mfeature/record-service/hot-mountain[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 05:02:19 2025 +0900
+
+    feat: 기록 관련 이미지
+
+[33mcommit fe32f395a121b99e0eb891a0a4b8d542014df805[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 04:21:08 2025 +0900
+
+    feat: hot-mountain 계산 기능
+
+[33mcommit a268540a24fc8ca1c1a374fe961c8b8421ac7e01[m
+Merge: cdcd6a7 6c105c8
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 01:28:35 2025 +0900
+
+    Merge pull request #16 from Team0ops/feature/record-service/rankings
+    
+    Feature/record service/rankings
+
+[33mcommit 6c105c83c2990789ae0118e15d7a2ad70a348256[m[33m ([m[1;31morigin/feature/record-service/rankings[m[33m, [m[1;32mfeature/record-service/rankings[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sun Jun 15 01:28:05 2025 +0900
+
+    feat: 기록 관련 이미지
+
+[33mcommit 1787d24d854b7f7c90eede6e09e06e6133cc6741[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 14 23:36:35 2025 +0900
+
+    feat: 등산왕에서 userId가 null인 경우 추가
+
+[33mcommit cf19f42dbc5ba2937683fb4b5ffdd7a15ea70fa2[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 14 22:53:12 2025 +0900
+
+    feat: 랭크 서비스 완료
+
+[33mcommit 50fdf471ec8f7f12eebfeb5f7f099defc987a3d9[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 14 21:35:44 2025 +0900
+
+     Merge
+
+[33mcommit d5246d33ecc2d0f0100d0ae596b53950abbe2762[m
+Merge: 955e9eb cdcd6a7
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 14 21:35:18 2025 +0900
+
+    Merge branch 'develop' of https://github.com/Team0ops/deungsanlog-backend into feature/record-service/rankings
+    # Please enter a commit message to explain why this merge is necessary,
+    # especially if it merges an updated upstream into a topic branch.
+    #
+    # Lines starting with '#' will be ignored, and an empty message aborts
+    # the commit.
+
+[33mcommit cdcd6a77ec9adbe293b3e3316e9948a032bed040[m
+Merge: 466cad0 1b4a9d3
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 14 21:24:51 2025 +0900
+
+    Merge pull request #15 from Team0ops/feature/user-service/initial
+    
+    favorite initial
+
+[33mcommit 1b4a9d3e13376584af4b475f4da984373f454150[m[33m ([m[1;31morigin/feature/user-service/initial[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Fri Jun 13 17:01:43 2025 +0900
+
+    favorite initial
+
+[33mcommit 466cad072861b7551c65f0b057f3988625d0ef6a[m
+Merge: 15aa00a 89aadbf
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 15:02:33 2025 +0900
+
+    Merge pull request #14 from Team0ops/feature/mountain-service/weather
+    
+    feat:weather and fire 구축
+
+[33mcommit 955e9ebe28928196afe5451175fd7bc4daad00a9[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 14:29:10 2025 +0900
+
+    feat: 기록 이미지 추가
+
+[33mcommit d17f7d45e41f96b87b63943eefc505a62ab07953[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 14:28:59 2025 +0900
+
+    feat: 기록 삭제 시 upload 속 이미지도 삭제
+
+[33mcommit 070952a65d1b0cca00520ad54e2677ad3b682d93[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 14:28:29 2025 +0900
+
+    chore: 불필요 이미지 삭제
+
+[33mcommit 89aadbfada247dc17dd83c64c169745b8d78b20d[m[33m ([m[1;31morigin/feature/mountain-service/weather[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Thu Jun 12 14:11:35 2025 +0900
+
+    feat:weather and fire 구축
+
+[33mcommit fc5a580f7523f2e041f6fd4cbdce7b2d0587a2c4[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 11:41:03 2025 +0900
+
+    feat: 기록 관련 이미지
+
+[33mcommit e0ad56894de3738cd62878df9bbfa699f0d98153[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 11:40:52 2025 +0900
+
+    feat: 등산왕 랭킹 계산 구현
+
+[33mcommit 15aa00adf948af004ee86814bf5ce31356f9a25d[m
+Merge: 274a511 5aa3bbb
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 06:17:46 2025 +0900
+
+    Merge pull request #13 from Team0ops/feature/record-service/record_hikings
+    
+    Feature/record service/record hikings
+
+[33mcommit 5aa3bbb57168622cf40cba9c1ee76aebe5d6cdda[m[33m ([m[1;31morigin/feature/record-service/record_hikings[m[33m, [m[1;32mfeature/record-service/record_hikings[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 06:16:49 2025 +0900
+
+    feat: 기록 게시물 수정 관련 기능 구현
+
+[33mcommit aae88596b92605948ac6e157e2fe866631e5384c[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 06:10:43 2025 +0900
+
+    feat: 기록 게시물 관련 이미지
+
+[33mcommit ebabba0dffe7b6ea71ade8fefd2f0b7f8e086afc[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 06:10:26 2025 +0900
+
+    fix: 이미지 업로드 경로 매핑 수정
+
+[33mcommit d2a483c2c7f9ed22e73919a674b919fb65bb2714[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 02:17:49 2025 +0900
+
+    feat: 기록기능 관련 이미지
+
+[33mcommit 3b66da7788ca8de52f11107b94b807b95461df6d[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 02:16:53 2025 +0900
+
+    feat: 기록 삭제 기능 구현
+
+[33mcommit 3da4615744478e423c6cd7a43fb5f73370a0c370[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 02:16:35 2025 +0900
+
+    feat: 기록 생성에 산 이름 추가
+
+[33mcommit cd8a7c4fc51a198d9db34f8caee48450c1f3c79d[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu Jun 12 00:42:10 2025 +0900
+
+    feat: DB 변경에 따른 mountainName 컬럼 추가
+
+[33mcommit 6a963629dd4b4bfc98cc63144a802008c8aade54[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed Jun 11 14:12:08 2025 +0900
+
+    fix: 기록 이미지 저장 경로 수정
+
+[33mcommit 274a511ab59eca44070840618e61bb2cc0a2f229[m
+Merge: c734b7c 317ebf6
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 10 17:19:23 2025 +0900
+
+    Merge pull request #12 from Team0ops/feature/record-service/record_hikings
+    
+    Feature/record service/record hikings
+
+[33mcommit 317ebf68e0e3661a17ab150ca2981230bf0054f3[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 10 17:18:47 2025 +0900
+
+    feat: 기록 페이지에서 사용할 검색 기능 구현
+
+[33mcommit 4b01a10c28d4bf77f0ee73c8003a7b4b88daa8a6[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 10 17:18:13 2025 +0900
+
+    feat: 기록 페이지 기능 및 테스트 이미지
+
+[33mcommit 05dabcfd8ed09af1fd4466285b7e9f96d12db55a[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue Jun 10 17:16:25 2025 +0900
+
+    feat: 기록 페이지에서 사용할 산 검색 기능 구현
+
+[33mcommit ece80be4c2ff865b4abcb27b7011df2272c9eba5[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 9 22:05:01 2025 +0900
+
+    fix: 모든 값을 조회하는 오류 수정
+
+[33mcommit 65b1af3fe186af07219052df76644a51fb5b61f1[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 9 22:04:36 2025 +0900
+
+    feat: 이미지 조회 기능 추가
+
+[33mcommit 079d48c1bddaef0d1bca90437563b138b8909158[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 9 15:33:33 2025 +0900
+
+    feat: 등산 기록에 사용자 닉네임 불러오기(feign 연동)
+
+[33mcommit 7d11112d68e396b9da46394afcfb19bc9341e042[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 9 15:17:22 2025 +0900
+
+    feat: user 작성한 글 리스트 가져오는 기능 구현
+
+[33mcommit ac8c9571b8c56f6319c42189b7770b43eb8803af[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 9 14:57:41 2025 +0900
+
+    feat: 기록기반 사용자 배지 레벨 조회 추가
+
+[33mcommit 0dffd41258b9f975a2533bb607b1bf6b14d7e0ba[m
+Merge: 6358c1c c734b7c
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 9 09:50:28 2025 +0900
+
+    Merge branch 'develop' of https://github.com/Team0ops/deungsanlog-backend into feature/record-service/record_hikings
+
+[33mcommit 6358c1c111284269e4a425cf1538c6900de3f27d[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 9 09:25:48 2025 +0900
+
+    feat: 등산 기록 기초 구축
+
+[33mcommit c734b7cc1d8d553edc0235e505153c9b41898996[m
+Merge: 3d7fb14 b4a266d
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Mon Jun 9 09:21:58 2025 +0900
+
+    Merge pull request #11 from Team0ops/feature/gateway-service/initial
+    
+    login,jwt
+
+[33mcommit b4a266d7600f9219b8350cb256125b8d42356ef5[m[33m ([m[1;31morigin/feature/gateway-service/initial[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Mon Jun 9 04:32:01 2025 +0900
+
+    login,jwt
+
+[33mcommit 3d7fb143df46552f616849909c1a2515f6e8c571[m[33m ([m[1;32mfeature/user-service/kakao-login[m[33m)[m
+Merge: 8948572 5f09f0d
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Sat Jun 7 23:10:32 2025 +0900
+
+    Merge pull request #10 from Team0ops/feature/user-service/initialize
+    
+    google OAuth initial
+
+[33mcommit 5f09f0d0268e5b1ddb5e83c297ab95f7bd6c20ab[m[33m ([m[1;31morigin/feature/user-service/initialize[m[33m)[m
+Author: ANGYUSUN <dksrbtjs9598@naver.com>
+Date:   Sat Jun 7 23:06:54 2025 +0900
+
+    google OAuth initial
+
+[33mcommit 8948572ee7d1a3347c4641a46b215473f68e8af5[m
+Merge: e7829cb 89c0131
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Sat Jun 7 21:45:31 2025 +0900
+
+    Merge pull request #9 from Team0ops/feature/ormie-service/full-impl
+    
+    Feature/ormie service/full impl
+
+[33mcommit 89c0131a670c5d65f2b84a650e9153f55803882f[m[33m ([m[1;31morigin/feature/ormie-service/full-impl[m[33m, [m[1;32mfeature/ormie-service/full-impl[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 16:30:41 2025 +0900
+
+    feat: 사용자 정보 기반 요청 기능 추가
+
+[33mcommit 48bc210e702fccc168dbce3550d97046eb80eb8a[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 16:29:14 2025 +0900
+
+    refator: 패키지명 수정
+
+[33mcommit 2fabc61edb0d99bc46235ee867eee6023ce08a95[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 16:28:03 2025 +0900
+
+    feat: ChatRequestDto에 사용자 프로필 정보(age, region, level) 필드 추가
+
+[33mcommit 7ef1ef4ce1aa7b00ebdaa4f7194b19d08a4c8a64[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 16:26:17 2025 +0900
+
+    feat: gateway CORS 설정 추가 - 프론트 로컬 도메인 허용
+
+[33mcommit 82a2b6e00f792e1af0541ff2ca5c6092e53cf679[m
+Merge: 9daf58b e7829cb
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 10:24:18 2025 +0900
+
+    Merge branch 'develop' of https://github.com/Team0ops/deungsanlog-backend into feature/ormie-service/full-impl
+
+[33mcommit e7829cb3fb0415845fbc3d38d8cedf257ca12646[m
+Merge: 307b09b c0c6e24
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 10:22:57 2025 +0900
+
+    Merge pull request #8 from Team0ops/feature/ormie-service/full-impl
+    
+    Feature/ormie service/full impl
+
+[33mcommit 9daf58b143f1e850c303205e54bcac22e555f2a9[m
+Merge: c0c6e24 307b09b
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 10:19:04 2025 +0900
+
+    Merge branch 'develop' of https://github.com/Team0ops/deungsanlog-backend into feature/ormie-service/full-impl
+
+[33mcommit 307b09bc8e5fd1862342867274f27ab7d24d93dc[m
+Merge: d9b99a6 b077394
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 10:13:10 2025 +0900
+
+    Merge pull request #6 from Team0ops/chore/db-connection
+    
+    Chore/db connection
+
+[33mcommit b0773948dd2b319f5f8b4e0c36f22befda090fd9[m[33m ([m[1;31morigin/chore/db-connection[m[33m, [m[1;32mchore/db-connection[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 10:08:19 2025 +0900
+
+    chore: 설정 분리 및 application-keys.yml 적용
+
+[33mcommit e8093f347b5d2088bd9d514d863566272ec7166e[m
+Merge: eed0a06 d9b99a6
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 29 09:59:45 2025 +0900
+
+    Merge branch 'develop' of https://github.com/Team0ops/deungsanlog-backend into chore/db-connection
+    
+    # Conflicts:
+    #       services/mountain-service/build.gradle
+
+[33mcommit d9b99a6d7e0db0ea5c7834cda6e4fb1bdeea10d2[m
+Merge: e496e12 1da7449
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Thu May 29 09:57:04 2025 +0900
+
+    Merge pull request #7 from Team0ops/feature/mountain-service/search
+    
+    mountain-service-Search initial
+
+[33mcommit 1da74497b07d669579982af2e580750864b55801[m[33m ([m[1;31morigin/feature/mountain-service/search[m[33m)[m
+Author: sunny <dksrbtjs9598@naver.com>
+Date:   Thu May 29 01:18:42 2025 +0900
+
+    mountain-service-Search initial
+
+[33mcommit c0c6e2468e977fd0ace4cd8e4fae48382b0b774a[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 22:53:50 2025 +0900
+
+    feat: OrmieService에 WebClient 요청 및 Jackson 응답 파싱 로직 구현
+
+[33mcommit 8ab206d1a8ca84361727ec9c753ce8f1b7c95045[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 22:53:05 2025 +0900
+
+    feat: 챗봇 대화 API 추가
+
+[33mcommit bc6ae2fa38e78823baa00fe739e59d118308657f[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 22:52:00 2025 +0900
+
+    feat: 챗봇 메시지 송수신용 DTO 클래스 추가
+
+[33mcommit 743ec757727211599861c3409c74720439b778e8[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 22:50:07 2025 +0900
+
+    chore: webflux, lombok, jackson-databind 의존성 추가
+
+[33mcommit eed0a06762911d00f8e19a0cf311f36479dd3a11[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 21:15:20 2025 +0900
+
+    feat: DB 설정
+
+[33mcommit 28de95b07d6f79bba7af7acfa74875c427b4befb[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 20:40:42 2025 +0900
+
+    feat: MySQL 연동 및 JPA 사용을 위한 의존성 추가
+
+[33mcommit 06e75aeb85f3723a60b59259f6515a2b713c57f6[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 19:48:51 2025 +0900
+
+    feat: community-service DB 연동
+
+[33mcommit e496e12f1ff6cca4d875fe67acffd6c18a4d4107[m
+Merge: e397740 869ca88
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 15:24:16 2025 +0900
+
+    Merge pull request #5 from Team0ops/chore/config-setup
+    
+    Chore/config setup
+
+[33mcommit 869ca88c76e3688110c589e7e695efee461a65ec[m[33m ([m[1;31morigin/chore/config-setup[m[33m, [m[1;32mchore/config-setup[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 15:20:41 2025 +0900
+
+    chore: Swagger UI 의존성 추가
+
+[33mcommit e090cde131f79e7ff915adcebb0ea331d28380e7[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 15:20:19 2025 +0900
+
+    chore: 각 서비스의 사용되지 않는 main.html 파일 제거
+
+[33mcommit 9f7a9a2f1e0650cace317ecceb26dd2e1b036192[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 15:07:20 2025 +0900
+
+    feat: 모든 서비스 main 응답을 REST API 형식으로 변경
+
+[33mcommit e39774069908dd7de260461e56e044ad22f3e454[m
+Merge: e9e2581 5b130a2
+Author: pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 14:17:31 2025 +0900
+
+    Merge pull request #4 from Team0ops/chore/config-setup
+    
+    Chore/config setup
+
+[33mcommit 5b130a251553ad518e3089cf45e9ce84d9983c77[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 14:15:49 2025 +0900
+
+    feat: 오르미 서비스 초기 구축
+
+[33mcommit e202b5ac762ebfe42b6a6424603f23098c7c5b56[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 14:15:23 2025 +0900
+
+    refactor: mapping 수정
+
+[33mcommit 89f812c51cce59955022828b1c2135f953fd54e9[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 14:14:40 2025 +0900
+
+    feat: 오르미, 알림 서비스 fallback 설정 추가
+
+[33mcommit 94ee8baf9a25f8b80205d75c893512bc68eefaf9[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Wed May 28 14:14:09 2025 +0900
+
+    feat: notification 서비스 초기 구축
+
+[33mcommit 5678ddd44b29c160f82ac5c0e99f50d0975e2251[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 23:46:02 2025 +0900
+
+    refactor: 패키지명 변경
+
+[33mcommit 2c9799c0aa0e88703e8345f3b9602a98c8c394d2[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 23:45:41 2025 +0900
+
+    feat: meeting-service 기본 프로젝트 생성
+
+[33mcommit ac912f897a961f40e3ca784866ac1ba5c470f104[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 23:45:14 2025 +0900
+
+    feat: community-service 기본 프로젝트 생성
+
+[33mcommit 11e5a71e6b6868214ff8297ae5103be48b11314e[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 23:04:01 2025 +0900
+
+    feat: record-service용 기본 템플릿 HTML 추가
+
+[33mcommit f33ba3505d42274c24dbb48fd98538301715bf2f[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 23:03:42 2025 +0900
+
+    chore: 빈 줄 삭제
+
+[33mcommit 841c249a5ac4fab51c245e36c23bc9852be0615f[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 23:03:22 2025 +0900
+
+    chore: record-service 설정 파일에 서비스명 및 프로필 추가
+    
+    - spring.application.name=record-service 추가
+    - spring.profiles.active=dev 및 keys 포함 설정
+
+[33mcommit fd60b7bdfa727a89d38597cb7aec1a13f5e57d81[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 23:02:43 2025 +0900
+
+    chore: JPA 및 DB 관련 의존성 제거
+
+[33mcommit 2272e077dc34ee9e706bb36dfd7d6538d4222722[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 22:53:47 2025 +0900
+
+    refactor: fallback 경로 /fallback/{service} 형식으로 통일
+    
+    - fallback 컨트롤러를 /fallback 경로로 통합
+    - users, mountains, records, community, meeting fallback 엔드포인트 추가
+    - 기존 단일 경로들을 명확한 서비스 구분 방식으로 변경
+
+[33mcommit 5acb8efdaeb911bb57f774fdd808a7d7cdb714d6[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 22:07:57 2025 +0900
+
+    refactor: body 수정
+
+[33mcommit 11b5354a22b46adf3bcbe308581204f2663c872b[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 22:07:40 2025 +0900
+
+    refactor: controller 파일명 변경 및 매핑 수정
+
+[33mcommit 68d2f6bab309da85ba2b6e50af723c3b6cb44f98[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 21:54:06 2025 +0900
+
+    feat: record-service 기본 구조 및 컨트롤러 추가
+
+[33mcommit a898995ddc889e29454188ea6c06d8708f038173[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 21:52:04 2025 +0900
+
+    refactor: controller 파일명 변경 및 URL 경로 변경
+
+[33mcommit 4d78ce80ec4296ecea6164a442d620ee135c0848[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Tue May 27 16:41:55 2025 +0900
+
+    refactor: 서비스 패키지 및 클래스 이름 정리
+
+[33mcommit e9e25812809cf11f2df05e120b719a8e1d29f5e2[m[33m ([m[1;32mfeature/initial-backend-setup[m[33m)[m
+Author: Pushseo <pushseo.kim@gmail.com>
+Date:   Thu May 22 12:44:42 2025 +0900
+
+    chore: key 파일 git 추적 해제
+
+[33mcommit 3b7a31417ade1109b9b13dac8ea8b35a5b8d39d4[m
+Merge: 6d524b6 c760053
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Thu May 22 12:37:05 2025 +0900
+
+    Merge pull request #3 from Team0ops/chore/gitignore-update
+    
+    feat: **/ 수정
+
+[33mcommit c7600531b4d0db2b8ae3cdffc41a32b25589b5e7[m
+Author: sunny <dksrbtjs9598@naver.com>
+Date:   Thu May 22 12:36:22 2025 +0900
+
+    feat: **/ 수정
+
+[33mcommit 6d524b630a01eeaa48dc71bd1b877c30ddd2f162[m
+Merge: 7078b6e 6c8b7ae
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Thu May 22 12:27:56 2025 +0900
+
+    Merge pull request #2 from Team0ops/feature/initial-backend-setup
+    
+    Feature/initial backend setup
+
+[33mcommit 6c8b7ae86ae287a6d5dfc66db9e08bb352396853[m[33m ([m[1;31morigin/feature/initial-backend-setup[m[33m)[m
+Author: sunny <dksrbtjs9598@naver.com>
+Date:   Thu May 22 12:25:48 2025 +0900
+
+    feat: 세팅 수정
+
+[33mcommit d3d75630bbc4b0c1b4be6e52cbf5b0e10759dadd[m
+Author: sunny <dksrbtjs9598@naver.com>
+Date:   Wed May 21 16:47:32 2025 +0900
+
+    feature: 백엔드 기초 아키텍처 구축
+
+[33mcommit 7078b6ef0bc0b189a166cbd56f8740fd99e4ee20[m
+Merge: adb8199 02ce33a
+Author: ANGYUSUN <154659193+ANGYUSUN@users.noreply.github.com>
+Date:   Wed May 21 16:43:12 2025 +0900
+
+    Merge pull request #1 from Team0ops/chore/gitignore-update
+    
+    chore: .gitignore에 설정 파일 및 로그 디렉터리 추가
+
+[33mcommit 02ce33a9c1715318cb900ace6e350a0a4f1260e4[m
+Author: sunny <dksrbtjs9598@naver.com>
+Date:   Wed May 21 16:16:32 2025 +0900
+
+    chore: .gitignore에 설정 파일 및 로그 디렉터리 추가
+    
+    application-keys.yml, bootstrap.properties 설정 파일과
+    logs/ 디렉터리를 Git 추적 대상에서 제외
+
+[33mcommit adb81991626e8686b4fc341a0550656273ee3283[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: sunny <dksrbtjs9598@naver.com>
+Date:   Mon May 19 19:42:38 2025 +0900
+
+    initializing structure

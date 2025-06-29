@@ -1,7 +1,6 @@
 package com.example.configserver.security;
 
-
-import org.bouncycastle.pqc.jcajce.provider.bike.BCBIKEPrivateKey;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -14,20 +13,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${spring.security.user.name:admin}")  // 기본값: admin
+    private String username;
+
+    @Value("${spring.security.user.password:1234}")  // 기본값: 1234
+    private String password;
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
                 .csrf((auth) -> auth.disable());
 
@@ -37,19 +39,16 @@ public class SecurityConfig {
         http
                 .httpBasic(Customizer.withDefaults());
 
-
         return http.build();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-
         UserDetails user1 = User.builder()
-                .username("admin")
-                .password(bCryptPasswordEncoder().encode("1234"))
+                .username(username)
+                .password(bCryptPasswordEncoder().encode(password))
                 .roles("ADMIN")
                 .build();
-
 
         return new InMemoryUserDetailsManager(user1);
     }
