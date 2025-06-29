@@ -184,6 +184,23 @@ public class MeetingService {
         member.setStatus(MeetingMember.Status.ACCEPTED);
         meetingMemberRepository.save(member);
 
+        // 신청자에게 수락 알림 전송
+        try {
+            HashMap<String, Object> req = new HashMap<>();
+            req.put("userId", userId);
+            req.put("type", "meeting_accepted");
+            
+            String content = "[" + meeting.getTitle() + "] 모임 참가 신청이 수락되었습니다!";
+            if (meeting.getChatLink() != null && !meeting.getChatLink().isEmpty()) {
+                content += "\n모임 채팅방 주소를 확인해 참여해주세요~";
+            }
+            
+            req.put("content", content);
+            notificationServiceClient.sendNotification(req);
+        } catch (Exception e) {
+            // 알림 실패는 무시
+        }
+
         // ACCEPTED 인원 수 체크
         long acceptedCount = meetingMemberRepository.findByMeetingId(meetingId).stream()
                 .filter(m -> m.getStatus() == MeetingMember.Status.ACCEPTED)
@@ -192,6 +209,9 @@ public class MeetingService {
         if (acceptedCount >= meeting.getMaxParticipants()) {
             meeting.setStatus(MeetingStatus.FULL);
             meetingRepository.save(meeting);
+            
+            // 모임이 FULL이 되었을 때 모든 참여자에게 알림
+            sendMeetingFullNotification(meeting);
         }
     }
 
@@ -235,6 +255,9 @@ public class MeetingService {
                 .orElseThrow(() -> new BadRequestException("해당 모임이 존재하지 않습니다."));
         meeting.setStatus(MeetingStatus.CLOSED);
         meetingRepository.save(meeting);
+        
+        // 모임이 마감되었을 때 모든 참여자에게 알림
+        sendMeetingClosedNotification(meeting);
     }
 
     public void cancelMeeting(Long meetingId) {
@@ -375,5 +398,45 @@ public class MeetingService {
             "currentPage", page,
             "size", size
         );
+    }
+
+    private void sendMeetingFullNotification(Meeting meeting) {
+        // 모임이 FULL이 되었을 때 모든 참여자에게 알림
+        List<MeetingMember> acceptedMembers = meetingMemberRepository.findByMeetingId(meeting.getId())
+                .stream()
+                .filter(member -> member.getStatus() == MeetingMember.Status.ACCEPTED)
+                .toList();
+                
+        for (MeetingMember member : acceptedMembers) {
+            try {
+                HashMap<String, Object> req = new HashMap<>();
+                req.put("userId", member.getUserId());
+                req.put("type", "meeting_full");
+                req.put("content", "[" + meeting.getTitle() + "] 모임의 구성이 완료되었습니다. 즐거운 모임되세요~");
+                notificationServiceClient.sendNotification(req);
+            } catch (Exception e) {
+                // 알림 실패는 무시
+            }
+        }
+    }
+
+    private void sendMeetingClosedNotification(Meeting meeting) {
+        // 모임이 마감되었을 때 모든 참여자에게 알림
+        List<MeetingMember> acceptedMembers = meetingMemberRepository.findByMeetingId(meeting.getId())
+                .stream()
+                .filter(member -> member.getStatus() == MeetingMember.Status.ACCEPTED)
+                .toList();
+                
+        for (MeetingMember member : acceptedMembers) {
+            try {
+                HashMap<String, Object> req = new HashMap<>();
+                req.put("userId", member.getUserId());
+                req.put("type", "meeting_closed");
+                req.put("content", "[" + meeting.getTitle() + "] 모임의 구성이 완료되었습니다. 즐거운 모임되세요~");
+                notificationServiceClient.sendNotification(req);
+            } catch (Exception e) {
+                // 알림 실패는 무시
+            }
+        }
     }
 }
