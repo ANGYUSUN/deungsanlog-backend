@@ -120,18 +120,10 @@ public class UserService {
             user.setEmail(request.getEmail());
         }
 
-        // 닉네임이 변경되었을 수 있음
-        if (!user.getNickname().equals(request.getNickname())) {
-            log.info("닉네임 변경: {} → {}", user.getNickname(), request.getNickname());
-            user.setNickname(request.getNickname());
-        }
-
-        // 프로필 이미지가 변경되었을 수 있음
-        if (request.getProfileImgUrl() != null &&
-                !request.getProfileImgUrl().equals(user.getProfileImgUrl())) {
-            log.info("프로필 이미지 변경: {} → {}", user.getProfileImgUrl(), request.getProfileImgUrl());
-            user.setProfileImgUrl(request.getProfileImgUrl());
-        }
+        // 닉네임은 기존 사용자의 것을 유지 (OAuth에서 덮어쓰지 않음)
+        // 프로필 이미지도 기존 사용자의 것을 유지 (OAuth에서 덮어쓰지 않음)
+        log.info("기존 사용자 정보 유지: nickname={}, profileImgUrl={}", 
+                user.getNickname(), user.getProfileImgUrl());
     }
 
     /**
